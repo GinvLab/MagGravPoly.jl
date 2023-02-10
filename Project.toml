@@ -1,7 +1,7 @@
 name = "MagGrav2Dpoly"
 uuid = "3f9039c5-deb8-4103-9b3d-d85c0e42008e"
 authors = ["Andrea Zunino", "Alessandro Ghirotto"]
-version = "0.8.0"
+version = "0.8.1"
 
 [deps]
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
