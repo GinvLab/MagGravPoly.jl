@@ -1,5 +1,13 @@
 
+"""
+MagGrav2Dpoly
 
+A module to perform magnetic and gravity anomaly calculations for 2D polygonal bodies.
+
+# Exports
+
+$(EXPORTS)
+"""
 module MagGrav2Dpoly
 
 

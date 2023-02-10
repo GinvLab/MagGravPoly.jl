@@ -83,7 +83,7 @@ See the related papers and examples for inverse calculations using the HMC strat
 
 First load the module,
 ```@example ex1
-using Mag2Dpoly
+using MagGrav2Dpoly
 nothing # hide
 ```
 then define an array containing the location of the observation points, where the first column represents the ``x`` position and the second the  ``z`` position. Remark: ``z`` points *downward*! So the observations have a negative ``z`` in this case.
@@ -140,7 +140,7 @@ tmag = tmagpolybodies2D(xzobs,northxax,pbody)
 The output vector is the magnetic anomaly at each of the observation points specified above.
 
 Now we can plot the results (e.g., using `CairoMakie`):
-```
+```@example ex1
 using CairoMakie
 
 fig = Figure()
@@ -169,19 +169,19 @@ save("mag.svg",fig) # hide
 ## Tutorial for gravity calculations
 
 First load the module,
-```@example ex1
-using Grav2Dpoly
+```@example ex2
+using MagGrav2Dpoly
 nothing # hide
 ```
 then define an array containing the location of the observation points, where the first column represents the ``x`` position and the second the  ``z`` position. Remark: ``z`` points *downward*! So the observations have a negative ``z`` in this case.
-```@example ex1
+```@example ex2
 # number of observations
 N=101
 xzobs = [LinRange(0.0,120.0,N) -1.0*ones(N)]
 nothing # hide
 ```
 In order to describe the polygonal bodies, two objects need to be specifies: 1)  an array containing all the positions of the vertices (first column represents the ``x`` position and the second the  ``z`` position) and 2) a mapping relating each polygonal body to its vertices. The position of vertices *must* be specifyied in a **counterclockwise** order.
-```@example ex1
+```@example ex2
 # vertices of the poligonal bodies
 vertices  = [35.0 50.0;
              65.0 50.0;
@@ -201,7 +201,7 @@ bodyindices = [ind1,ind2]
 nothing # hide
 ```
 Now, we specify the density for each of the polygonal bodies
-```@example ex1
+```@example ex2
 # two bodies in this case
 rho = [2000.0,3000.0]
 nothing # hide
@@ -211,19 +211,19 @@ Finally, construct the  poligonal body object by instantiating a `GravPolygBodie
 2. if `ylatext` is a single real number, then the forward computation is 2.5D, i.e., the polygonal bodies extend laterally on both sides by an amount specified by the value of `ylatext`
 3. if `ylatext` is a two-element vector, then the forward computation is 2.75D, i.e., the polygonal bodies extend laterally from `ylatext[1]` to `ylatex[2]` (with the condition `ylatex[2]>ylatex[1]`). 
 Here we choose to run a 2.75D forward computation:
-```@example ex1
+```@example ex2
 pbody = GravPolygBodies2D(bodyindices,vertices,rho,ylatext=[50.0,90.0])
 nothing # hide
 ```
 
 At this point the gravity field can be computed:
-```@example ex1
+```@example ex2
 tgrav = tgravpolybodies2D(xzobs,pbody)
 ```
 The output vector is the gravity anomaly at each of the observation points specified above.
 
 Now we can plot the results (e.g., using `CairoMakie`):
-```
+```@example ex2
 using CairoMakie
 
 fig = Figure()
@@ -251,11 +251,11 @@ save("grav.svg",fig) # hide
 
 ## Tutorial for joint mag and grav
 First load the modules,
-```@example ex1
+```@example ex3
 using MagGrav2Dpoly
 ```
 then define 1) the angle between the Magnetic Field's North and the model profile, 2) an array containing the location of the observation points along it, where the first column represents the ``x`` position and the second the  ``z`` position. Remark: ``z`` points *downward*! So the observations have a negative ``z`` in this case.
-```@example ex1
+```@example ex3
 # angle with the North axis
 northxax = 90.0
 
@@ -266,7 +266,7 @@ xzobs_grav = copy(xzobs_mag)
 nothing # hide
 ```
 In order to describe the polygonal bodies, two objects need to be specifies: 1)  an array containing all the positions of the vertices (first column represents the ``x`` position and the second the  ``z`` position) and 2) a mapping relating each polygonal body to its vertices. The position of vertices *must* be specifyied in a **counterclockwise** order.
-```@example ex1
+```@example ex3
 # vertices of the poligonal bodies
 vertices  = [35.0 50.0;
              65.0 50.0;
@@ -286,14 +286,14 @@ bodyindices = [ind1,ind2]
 nothing # hide
 ```
 Now, we specify the density and magnetization for each of the polygonal bodies
-```@example ex1
+```@example ex3
 # two bodies in this case
 # densities
 rho = [2000.0,3000.0]
 # induced magnetizations
-Jind = Mag2Dpoly.MagnetizVector(mod=[4.9,1.0],Ideg=[0.0,0.0],Ddeg=[5.0,5.0])
+Jind = MagnetizVector(mod=[4.9,1.0],Ideg=[0.0,0.0],Ddeg=[5.0,5.0])
 # remanent magnetizations
-Jrem = Mag2Dpoly.MagnetizVector(mod=[3.1,1.5],Ideg=[45.0,-45.0],Ddeg=[0.0,0.0])
+Jrem = MagnetizVector(mod=[3.1,1.5],Ideg=[45.0,-45.0],Ddeg=[0.0,0.0])
 nothing # hide
 ```
 Finally, construct the poligonal body object by instantiating a `JointPolygBodies2D` structure. Here we can determine the type of forward calculation, i.e., 2D, 2.5D or 2.75D by specifying the variable `ylatext`. There are three cases:
@@ -301,21 +301,21 @@ Finally, construct the poligonal body object by instantiating a `JointPolygBodie
 2. if `ylatext` is a single real number, then the forward computation is 2.5D, i.e., the polygonal bodies extend laterally on both sides by an amount specified by the value of `ylatext`
 3. if `ylatext` is a two-element vector, then the forward computation is 2.75D, i.e., the polygonal bodies extend laterally from `ylatext[1]` to `ylatex[2]` (with the condition `ylatex[2]>ylatex[1]`). 
 Here we choose to run a 2.75D forward computation:
-```@example ex1
+```@example ex3
 pbody = JointPolygBodies2D(bodyindices,vertices,Jind,Jrem,rho,ylatext=[50.0,90.0])
 nothing # hide
 ```
 
 At this point the gravity and magnetic fields can be computed:
-```@example ex1
+```@example ex3
 # compute the gravity anomaly and total field magnetic anomaly
 tgrav,tmag = tjointpolybodies2D(xzobs_grav,xzobs_mag,northxax,pbody)
 nothing # hide
 ```
 The output vectors are the gravity and magnetic anomalies at each of the observation points specified above.
 
-Alternatively, in the 2D case we could choose among other forward formulations implemented, specified as strings. Now we choose as forward types for the gravity and magnetic case `"wonbev"` and `"talwani_red"` respectively (see docs of `Grav2Dpoly` and `Mag2Dpoly` for details):
-```@example ex1
+Alternatively, in the 2D case we could choose among other forward formulations implemented, specified as strings. Now we choose as forward types for the gravity and magnetic case `"wonbev"` and `"talwani_red"` respectively (see docs of `MagGrav2Dpoly` for details):
+```@example ex3
 pbody = JointPolygBodies2D(bodyindices,vertices,Jind,Jrem,rho,ylatext=nothing)
 nothing # hide
 # type of forward algorithms of the gravity and magnetic case
@@ -327,7 +327,7 @@ nothing # hide
 ```
 
 Now we can plot the results (e.g., using `CairoMakie`):
-```
+```@example ex3
 using CairoMakie
 
 fig = Figure()
@@ -375,20 +375,37 @@ JointPolygBodies2D
 	in order to perform gravity and magnetic anomaly calculations.
 
 
+### Forward functions 
 
-### Forward functions for magnetics
+#### Magnetics
 ```@docs
 tmagpolybodies2D
 tmagpolybodies2Dgen
 ```
 
-### HMC helper functions for magnetics
+#### Gravity
 ```@docs
-Mag2Dpoly.HMCMag2Dpoly
-Mag2Dpoly.Mag2DpolyProb
+tgravpolybodies2D
+tgravpolybodies2Dgen
 ```
 
-#### Misfit structure & functions for magnetics
+#### Joint mag and grav 
+```@docs
+tjointpolybodies2D
+tjointpolybodies2Dgen
+```
+
+
+### HMC helper functions 
+```@docs
+Mag2DpolyProb
+Grav2DpolyProb
+Joint2DpolyProb
+```
+
+### Misfit structure & functions 
+
+#### Magnetics
 ```@docs
 Mag2DPolyMisf
 precalcADstuffmag
@@ -396,31 +413,7 @@ calcmisfmag
 calc∇misfmag
 ```
 
-### Useful functions for magnetics
-!!! note
-    These functions are not exported. To call them
-    type `Mag2Dpoly.` before the name of the functions.
-	
-```@docs
-Mag2Dpoly.convert_H_to_B_nT
-Mag2Dpoly.convert_B_nT_to_H
-Mag2Dpoly.magcomp
-```
-
-
-### Forward functions for gravity
-```@docs
-tgravpolybodies2D
-tgravpolybodies2Dgen
-```
-
-### HMC helper functions for gravity
-```@docs
-Grav2Dpoly.HMCGrav2Dpoly
-Grav2Dpoly.Grav2DpolyProb
-```
-
-#### Misfit structure & functions for gravity
+#### Gravity
 ```@docs
 Grav2DPolyMisf
 precalcADstuffgrav
@@ -428,15 +421,15 @@ calcmisfgrav
 calc∇misfgrav
 ```
 
-### Forward functions for joint mag and grav calculations
+### Useful functions for magnetics
+!!! note
+    These functions are not exported. To call them
+    type `MagGrav2Dpoly.` before the name of the functions.
+	
 ```@docs
-tjointpolybodies2D
-tjointpolybodies2Dgen
+MagGrav2Dpoly.convert_H_to_B_nT
+MagGrav2Dpoly.convert_B_nT_to_H
+MagGrav2Dpoly.magcomp
 ```
 
-### HMC helper functions for joint mag and grav
-```@docs
-JointMagGrav2Dpoly.HMCJointMagGrav2Dpoly
-JointMagGrav2Dpoly.Joint2DpolyProb
-```
 
