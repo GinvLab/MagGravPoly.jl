@@ -160,7 +160,7 @@ ax2.yreversed=true
 linkxaxes!(ax1,ax2)
 display(fig)
 
-save("mag.svg",fig) # hide
+save("images/mag.svg",fig) # hide
 ```
 
 ![](images/mag.svg)
@@ -243,7 +243,7 @@ ax2.yreversed=true
 linkxaxes!(ax1,ax2)
 display(fig)
 
-save("grav.svg",fig) # hide
+save("images/grav.svg",fig) # hide
 ```
 
 ![](images/grav.svg)
@@ -350,7 +350,7 @@ ax3.yreversed=true
 linkxaxes!(ax1,ax2,ax3)
 display(fig)
 
-save("jointgravmag.svg",fig) # hide
+save("images/jointgravmag.svg",fig) # hide
 ```
 
 ![](images/jointgravmag.svg)
