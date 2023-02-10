@@ -1,6 +1,6 @@
 
 
-using Documenter, JointMagGrav2Dpoly
+using Documenter, MagGrav2Dpoly
 
 
 makedocs(sitename="MagGrav2Dpoly.jl",
