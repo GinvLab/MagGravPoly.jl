@@ -1,7 +1,7 @@
 image: julia:1.8        # image comes from Docker hub
 
 before_script:
-    # - export
+    - export
     #- echo $(pwd)
     #- echo $(ls ./)
     ## - julia --project=@. -e 'ENV["JULIA_PKG_USE_CLI_GIT"]=true; using Pkg; Pkg.add(url="https://gitlab.com/JuliaGeoph/GeoPolygons.jl")'
@@ -40,4 +40,4 @@ pages:
       - public
   rules:
     - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_TAG ) && $DOCUMENTER_KEY    
-    
+    #- if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_TAG ) && $DOCUMENTER_KEY 
