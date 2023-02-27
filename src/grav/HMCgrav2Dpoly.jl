@@ -80,7 +80,7 @@ struct Grav2DpolyProb
         end
 
         # Instantiate the misfit type
-        gravmisf = Grav2DPolyMisf(pbodystart.geom.bodyindices,grav_xzobs,grav_obsdata,grav_invCd,
+        gravmisf = MagGrav2DPolyMisf(pbodystart.geom.bodyindices,grav_xzobs,grav_obsdata,grav_invCd,
                                   grav_whichpar,allvert=grav_allvert,rho=rho,ylatext=ylatext)
 
         ##----------------------------------
@@ -166,7 +166,7 @@ function (grav2dprob::Grav2DpolyProb)(vecmodpar::Vector{Float64},kind::Symbol)
         end
 
         # compute gradient
-        vecgrad = Grav2Dpoly.calc∇misfgrav(grav2dprob.gravmisf,vecmodpar,
+        vecgrad = MagGrav2Dpoly.calc∇misfgrav(grav2dprob.gravmisf,vecmodpar,
                                            grav2dprob.ADkind,grav2dprob.autodiffstuff[])
         
         # return flattened gradient
@@ -296,7 +296,7 @@ function hmcpolycheckgrav!(gravprob::Grav2DpolyProb,mcur::Vector{Float64},mnew::
 
     #-------------------------
     ## create some structures
-    qbody = Grav2Dpoly.vecmodpar2gravstruct(gravprob.gravmisf,mnew)
+    qbody = MagGrav2Dpoly.vecmodpar2gravstruct(gravprob.gravmisf,mnew)
     
     ##-------------------------------------------------
     # Initial check intersections of segments and with topography
@@ -375,7 +375,7 @@ function hmcpolycheckgrav!(gravprob::Grav2DpolyProb,mcur::Vector{Float64},mnew::
     
     ##-------------------------------------------------
     ## unroll back to vectors
-    mnew .= Grav2Dpoly.gravstruct2vec(gravprob.gravmisf.whichpar,qbody)
+    mnew .= MagGrav2Dpoly.gravstruct2vec(gravprob.gravmisf.whichpar,qbody)
     
     ## Adjust p to the new altered trajectory
     ## pnew = M * grad(K) [ from gradk(K) = M^-1 * pnew ]
