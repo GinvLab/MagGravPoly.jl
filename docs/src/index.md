@@ -1,8 +1,8 @@
 
-
 ```@meta
 Author = "Andrea Zunino"
 Author = "Alessandro Ghirotto"
+EditURL = "https://gitlab.com/JuliaGeoph/MagGrav2Dpoly.jl/-/tree/main/docs/src/"
 ```
 
 # Contents
