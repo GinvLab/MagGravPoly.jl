@@ -22,6 +22,6 @@ If you use this code for research or else, please cite the related papers:
 
 * Zunino, Ghirotto, Armadillo, & Fichtner (2022). **Hamiltonian Monte Carlo probabilistic joint inversion of 2D (2.75D) gravity and magnetic data**. *Geophysical Research Letters*,  49, e2022GL099789. https://doi.org/10.1029/2022GL099789.
 
-Regarding solving the inverse problem with the HMC method, please see the following paper and check out the package `HMCSampler.jl`:
+Regarding solving the inverse problem with the HMC method, please see the following paper and check out the package `MCsamplers`:
 
 * Zunino, Gebraad, Ghirotto, & Fichtner (2023). **HMCLab: a framework for solving diverse geophysical inverse problems using the Hamiltonian Monte Carlo method**. in prep.
