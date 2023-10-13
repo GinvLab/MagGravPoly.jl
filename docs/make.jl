@@ -3,13 +3,15 @@
 using Documenter, MagGrav2Dpoly
 
 
-makedocs(sitename="MagGrav2Dpoly.jl",
+makedocs(repo="https://gitlab.com/JuliaGeoph/MagGrav2Dpoly.jl/blob/{commit}{path}#{line}",
+         sitename="MagGrav2Dpoly.jl",
          modules = [MagGrav2Dpoly],
          authors = "Andrea Zunino, Alessandro Ghirotto",
          format = Documenter.HTML(prettyurls=get(ENV,"CI",nothing)=="true"),
          pages = [
              "Home" => "index.md",
-         ]
+         ],
+         warnonly = [:missing_docs, :cross_references]
          )
 
 deploydocs(
