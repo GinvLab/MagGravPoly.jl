@@ -2,7 +2,7 @@
 """
 HMCMag2Dpoly
 
-A convenience module to facilitate the use of `Mag2Dpoly` within the framework of Hamiltonian Monte Carlo inversion by employing the package `HMCtomo`. 
+A convenience module to facilitate the use of the magnetic forward code in `MagGrav2Dpoly` within the framework of Hamiltonian Monte Carlo inversion by employing the package `MCsamplers`. 
 
 # Exports
 
@@ -141,7 +141,7 @@ function (mag2dprob::Mag2DpolyProb)(vecmodpar::Vector{Float64},kind::Symbol)
 
         if mag2dprob.firsttime_grad[] #&& (usingrevdiff==true)
 
-            mag2dprob.autodiffstuff[] = Mag2Dpoly.precalcADstuffmag(magmisf,ADkind,vecmodpar)
+            mag2dprob.autodiffstuff[] = MagGrav2Dpoly.precalcADstuffmag(mag2dprob.magmisf,mag2dprob.ADkind,vecmodpar)
 
             # if mag2dprob.ADkind=="REVdiffTAPE"
             #     mag2dprob.autodiffstuff[] = ReverseDiff.GradientTape(mag2dprob.magmisf,vecmodpar)
@@ -170,7 +170,7 @@ function (mag2dprob::Mag2DpolyProb)(vecmodpar::Vector{Float64},kind::Symbol)
         end
 
         # compute gradient
-        vecgrad = Mag2Dpoly.∇misf(mag2dprob.magmisf,vecmodpar,
+        vecgrad = MagGrav2Dpoly.calc∇misfmag(mag2dprob.magmisf,vecmodpar,
                         mag2dprob.ADkind,mag2dprob.autodiffstuff[])
         
         # return flattened gradient
@@ -300,7 +300,7 @@ function hmcpolycheckmag!(magprob::Mag2DpolyProb,mcur::Vector{Float64},mnew::Vec
    
     #-------------------------
     ## create some structures
-    qbody = Mag2Dpoly.vecmodpar2magstruct(magprob.magmisf,mnew)
+    qbody = MagGrav2Dpoly.vecmodpar2magstruct(magprob.magmisf,magprob.magmisf.bodyindices,mnew)
 
     ##-------------------------------------------------
     # Initial check intersections of segments and with topography
@@ -380,7 +380,7 @@ function hmcpolycheckmag!(magprob::Mag2DpolyProb,mcur::Vector{Float64},mnew::Vec
         
     ##-------------------------------------------------
     ## unroll back to vectors
-    mnew .= Mag2Dpoly.magstruct2vec(magprob.magmisf.whichpar,qbody)
+    mnew .= MagGrav2Dpoly.magstruct2vec(magprob.magmisf.whichpar,qbody)
 
     ## Adjust p to the new altered trajectory
     ## pnew = M * grad(K) [ from gradk(K) = M^-1 * p ]

@@ -2,7 +2,7 @@
 """
 HMCJointMagGrav2Dpoly
 
-A convenience module to facilitate the use of `Mag2Dpoly` and `Grav2Dpoly` within the framework of Hamiltonian Monte Carlo inversion by employing the package `HMCsampler.jl`. 
+A convenience module to facilitate the use of both magnetic and gravity forward codes in `MagGrav2Dpoly` within the framework of Hamiltonian Monte Carlo inversion by employing the package `MCsamplers.jl`. 
 
 # Exports
 
@@ -100,14 +100,14 @@ struct Joint2DpolyProb
         dofwdchecks = true
         firstcheck = Ref(true)
         # bodyindices stuff
-        nbi = length(magmisf.bodyindices)
+        #nbi = length(magmisf.bodyindices)
         #@assert nbi==length(gravmisf.bodyindices)
         #for i=1:nbi
         #    @assert magmisf.bodyindices[i] == gravmisf.bodyindices[i]
         #end
         orgbodyindices = deepcopy(jpbodystart.geom.bodyindices)
         # check for half dim (same for both mag & grav)
-        @assert magmisf.halfdim == gravmisf.halfdim
+        @assert magmisf.ylatext == gravmisf.ylatext
         ##==============================================
         probkind = :polygonalbodies
         #----------------------------------------------
@@ -180,7 +180,7 @@ function (joint2dprob::Joint2DpolyProb)(vecmodpar::Vector{Float64},kind::Symbol)
 
             ############### Mag ################
 
-            joint2dprob.autodiffstuffmag[] = Mag2Dpoly.precalcADstuffmag(joint2dprob.magmisf,ADkindmag,
+            joint2dprob.autodiffstuffmag[] = MagGrav2Dpoly.precalcADstuffmag(joint2dprob.magmisf,joint2dprob.ADkindmag,
                                                                          vecmodmag)
 
             # if joint2dprob.ADkindmag=="REVdiffTAPE"
@@ -209,7 +209,7 @@ function (joint2dprob::Joint2DpolyProb)(vecmodpar::Vector{Float64},kind::Symbol)
 
             ############### Grav ################
 
-            joint2dprob.autodiffstuffgrav[] = Grav2Dpoly.precalcADstuffgrav(joint2dprob.gravmisf,ADkindgrav,
+            joint2dprob.autodiffstuffgrav[] = MagGrav2Dpoly.precalcADstuffgrav(joint2dprob.gravmisf,joint2dprob.ADkindgrav,
                                                                             vecmodgrav)
 
             # if joint2dprob.ADkindgrav=="REVdiffTAPE"
@@ -346,8 +346,8 @@ end
 
 function splitmaggrav(joint2dprob::Joint2DpolyProb,vecmodpar::Vector)
 
-    vecmodmag,vecmodgrav = JointMagGrav2Dpoly.splitmaggrav(joint2dprob.magmisf,
-                                                           joint2dprob.gravmisf,vecmodpar)
+    vecmodmag,vecmodgrav = MagGrav2Dpoly.splitmaggrav(joint2dprob.magmisf,
+                                                      joint2dprob.gravmisf,vecmodpar)
 
 
     # nbi = length(joint2dprob.orgbodyindices)
@@ -401,11 +401,11 @@ function ∇misfjoint(joint2dprob::Joint2DpolyProb,vecmodmag::AbstractArray,vecm
     # vecmodmag,vecmodgrav = splitmaggrav(joint2dprob,vecmodpar)
     
     # compute separate gradients for mag & grav
-    gradmag = Mag2Dpoly.∇misf(joint2dprob.magmisf,vecmodmag,
+    gradmag = MagGrav2Dpoly.calc∇misfmag(joint2dprob.magmisf,vecmodmag,
                               joint2dprob.ADkindmag,joint2dprob.autodiffstuffmag[])
     
     
-    gradgrav = Grav2Dpoly.∇misf(joint2dprob.gravmisf,vecmodgrav,
+    gradgrav = MagGrav2Dpoly.calc∇misfgrav(joint2dprob.gravmisf,vecmodgrav,
                                 joint2dprob.ADkindgrav,joint2dprob.autodiffstuffgrav[])
 
     

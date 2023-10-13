@@ -2,7 +2,7 @@
 """
 HMCGrav2Dpoly
 
-A convenience module to facilitate the use of `Grav2Dpoly` within the framework of Hamiltonian Monte Carlo inversion by employing the package `HMCtomo`. 
+A convenience module to facilitate the use of the gravity forward code in `MagGrav2Dpoly` within the framework of Hamiltonian Monte Carlo inversion by employing the package `MCsamplers`. 
 
 # Exports
 
@@ -137,7 +137,7 @@ function (grav2dprob::Grav2DpolyProb)(vecmodpar::Vector{Float64},kind::Symbol)
 
         if grav2dprob.firsttime_grad[] #&& (usingrevdiff==true)
 
-            grav2dprob.autodiffstuff[] = Grav2Dpoly.precalcADstuffgrav(gravmisf,ADkind,vecmodpar)
+            grav2dprob.autodiffstuff[] = MagGrav2Dpoly.precalcADstuffgrav(grav2dprob.gravmisf,grav2dprob.ADkind,vecmodpar)
 
             # if grav2dprob.ADkind=="REVdiffTAPE"
             #     grav2dprob.autodiffstuff[] = ReverseDiff.GradientTape(grav2dprob.gravmisf,vecmodpar)
@@ -166,7 +166,7 @@ function (grav2dprob::Grav2DpolyProb)(vecmodpar::Vector{Float64},kind::Symbol)
         end
 
         # compute gradient
-        vecgrad = Grav2Dpoly.calc∇misfgrav(grav2dprob.gravmisf,vecmodpar,
+        vecgrad = MagGrav2Dpoly.calc∇misfgrav(grav2dprob.gravmisf,vecmodpar,
                                            grav2dprob.ADkind,grav2dprob.autodiffstuff[])
         
         # return flattened gradient
@@ -296,7 +296,7 @@ function hmcpolycheckgrav!(gravprob::Grav2DpolyProb,mcur::Vector{Float64},mnew::
 
     #-------------------------
     ## create some structures
-    qbody = Grav2Dpoly.vecmodpar2gravstruct(gravprob.gravmisf,mnew)
+    qbody = MagGrav2Dpoly.vecmodpar2gravstruct(gravprob.gravmisf,gravprob.gravmisf.bodyindices,mnew)
     
     ##-------------------------------------------------
     # Initial check intersections of segments and with topography
@@ -375,7 +375,7 @@ function hmcpolycheckgrav!(gravprob::Grav2DpolyProb,mcur::Vector{Float64},mnew::
     
     ##-------------------------------------------------
     ## unroll back to vectors
-    mnew .= Grav2Dpoly.gravstruct2vec(gravprob.gravmisf.whichpar,qbody)
+    mnew .= MagGrav2Dpoly.gravstruct2vec(gravprob.gravmisf.whichpar,qbody)
     
     ## Adjust p to the new altered trajectory
     ## pnew = M * grad(K) [ from gradk(K) = M^-1 * pnew ]

@@ -6,8 +6,7 @@ l12(n,ncoo,nbo) = (ncoo+1+(n-1)*nbo,ncoo+n*nbo)
 """
 $(TYPEDSIGNATURES)
 
-Function to create a vector of model parameters the user would like to invert from a `MagPolygBodies2D` polygons structure. 
-For this purpose is required as input even a `Mag2DPolyMisf` misfit structure.  
+Function to create a vector of model parameters the user would like to invert from a `MagPolygBodies2D` polygons structure. For this purpose is required as input even a `Mag2DPolyMisf` misfit structure.  
 """
 function magstruct2vec(whichpar::Symbol,magpbod::MagPolygBodies2D)
     
@@ -107,10 +106,11 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Function to reconstruct a `MagPolygBodies2D` polygons structure from the vector of model parameters the user would like to invert. 
-for this purpose is required as input even a `Mag2DPolyMisf` misfit structure.  
+Function to reconstruct a `MagPolygBodies2D` polygons structure from i) a list of `bodyindices` and ii) a vector of model parameters the user would like to invert. For this purpose is required as input even a `Mag2DPolyMisf` misfit structure.  
 """
-function vecmodpar2magstruct(magmisf::Mag2DPolyMisf,modpar::Vector{<:Real}) 
+function vecmodpar2magstruct(magmisf::Mag2DPolyMisf,curbodyindices::Vector{<:Vector{<:Integer}},modpar::Vector{<:Real})
+    ## separate "curbodyindices" is necessary because the bodyindices might not be in sync
+    ##  with the iterations of HMC, so they must be taken from the .h5 file.
 
     if magmisf.whichpar==:all
 
@@ -170,17 +170,21 @@ function vecmodpar2magstruct(magmisf::Mag2DPolyMisf,modpar::Vector{<:Real})
         
     end
 
-    mbody = MagPolygBodies2D(magmisf.bodyindices,allvert,Jind,Jrem,
+    mbody = MagPolygBodies2D(curbodyindices,allvert,Jind,Jrem,
                              ylatext=magmisf.ylatext)
 
     return mbody
 end
 
 #############################################
+##########################################
 
-function vecmodpar2vertices(magmisf::Mag2DPolyMisf,modpar::Vector{<:Real})
-    ## separate "curbodyindices" is necessary because the bodyindices might not be in sync
-    ##  with the iterations of HMC, so they must be taken from the .h5 file.
+"""
+$(TYPEDSIGNATURES)
+
+Function to extract a list of polygon vertices from i) a `Mag2DPolyMisf` misfit structure and ii) a vector of model parameters the user would like to invert.  
+"""
+function vecmodpar2magvertices(magmisf::Mag2DPolyMisf,modpar::Vector{<:Real})
 
     whichparmag = magmisf.whichpar
 
@@ -188,7 +192,7 @@ function vecmodpar2vertices(magmisf::Mag2DPolyMisf,modpar::Vector{<:Real})
 
     if whichparmag==:all 
         
-        ncoo = length(modpar)-(7*nbo)
+        ncoo = length(modpar)-(6*nbo)
         nvert = div(ncoo,2)
 
         # set vertices
@@ -209,7 +213,7 @@ function vecmodpar2vertices(magmisf::Mag2DPolyMisf,modpar::Vector{<:Real})
         allvert = copy(magmisf.allvert)
 
     else
-        error("vecmodpar2vertices(): Wrong argument 'magmisf.whichpar'. Aborting.")
+        error("vecmodpar2magvertices(): Wrong argument 'magmisf.whichpar'. Aborting.")
     end
     
     return allvert
