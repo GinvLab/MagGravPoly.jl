@@ -2,8 +2,7 @@
 """
 $(TYPEDSIGNATURES)
 
-Function to create a vector of model parameters the user would like to invert from a `GravPolygBodies2D` polygons structure. 
-For this purpose is required as input even a `Grav2DPolyMisf` misfit structure.  
+Function to create a vector of model parameters the user would like to invert from a `GravPolygBodies2D` polygons structure. For this purpose is required as input even a `Grav2DPolyMisf` misfit structure.  
 """
 function gravstruct2vec(whichpar::Symbol,gravpbod::GravPolygBodies2D)
 
@@ -70,10 +69,11 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Function to reconstruct a `GravPolygBodies2D` polygons structure from the vector of model parameters the user would like to invert. 
-for this purpose is required as input even a `Grav2DPolyMisf` misfit structure.  
+Function to reconstruct a `GravPolygBodies2D` polygons structure from i) a list of `bodyindices` and ii) a vector of model parameters the user would like to invert. For this purpose is required as input even a `Grav2DPolyMisf` misfit structure.  
 """
-function vecmodpar2gravstruct(gravmisf::Grav2DPolyMisf,modpar::Vector{<:Real})
+function vecmodpar2gravstruct(gravmisf::Grav2DPolyMisf,curbodyindices::Vector{<:Vector{<:Integer}},modpar::Vector{<:Real})
+    ## separate "curbodyindices" is necessary because the bodyindices might not be in sync
+    ##  with the iterations of HMC, so they must be taken from the .h5 file.
 
     if gravmisf.whichpar==:all
 
@@ -105,10 +105,53 @@ function vecmodpar2gravstruct(gravmisf::Grav2DPolyMisf,modpar::Vector{<:Real})
                 
     end       
     
-    mbody = GravPolygBodies2D(gravmisf.bodyindices,allvert,rho,
+    mbody = GravPolygBodies2D(curbodyindices,allvert,rho,
                               ylatext=gravmisf.ylatext)
 
     return mbody
 end
 
 #############################################
+##########################################
+
+"""
+$(TYPEDSIGNATURES)
+
+Function to extract a list of polygon vertices from i) a `Grav2DPolyMisf` misfit structure and ii) a vector of model parameters the user would like to invert.  
+"""
+function vecmodpar2gravvertices(gravmisf::Grav2DPolyMisf,modpar::Vector{<:Real})
+
+    whichpargrav = gravmisf.whichpar
+
+    nbo = length(gravmisf.bodyindices)
+
+    if whichpargrav==:all 
+        
+        ncoo = length(modpar)-nbo
+        nvert = div(ncoo,2)
+
+        # set vertices
+        allvert = reshape(modpar[1:ncoo],nvert,2)
+
+
+    elseif whichpargrav==:vertices 
+        
+        ncoo = length(modpar)##-nbo
+        nvert = div(ncoo,2)
+
+        # set vertices
+        allvert = reshape(modpar[1:ncoo],nvert,2)
+        
+    elseif whichpargrav==:density 
+
+        # set vertices
+        allvert = copy(gravmisf.allvert)
+
+    else
+        error("vecmodpar2gravvertices(): Wrong argument 'gravmisf.whichpar'. Aborting.")
+    end
+    
+    return allvert
+end
+
+############################################################################

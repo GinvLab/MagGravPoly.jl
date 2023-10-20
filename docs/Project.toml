@@ -3,4 +3,4 @@ Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 MagGrav2Dpoly = "3f9039c5-deb8-4103-9b3d-d85c0e42008e"
 
 [compat]
-Documenter = ">=0.26"
+Documenter = "1"

@@ -4,7 +4,11 @@
 ## l12(n,ncoo,nbo) = (ncoo+1+(n-1)*nbo,ncoo+n*nbo)
 
 #######################################################################
+"""
+$(TYPEDSIGNATURES)
 
+Function to create a vector of model parameters the user would like to invert from a `JointPolygBodies2D` polygons structure. For this purpose is required as input even both `Mag2DPolyMisf` and `Grav2DPolyMisf` misfit structures.  
+"""
 function jointstruct2vec(mag_whichpar::Symbol,grav_whichpar::Symbol,jointpbod::JointPolygBodies2D)
 
     whichparmag = mag_whichpar
@@ -166,6 +170,11 @@ end
 ##########################################
 
 #function vecmodpar2jointstruct(jointprob::Joint2DpolyProb,modpar::Vector{<:Real})
+"""
+$(TYPEDSIGNATURES)
+
+Function to reconstruct a `JointPolygBodies2D` polygons structure from i) a list of `bodyindices` and ii) a vector of model parameters the user would like to invert. For this purpose is required as input even both `Mag2DPolyMisf` and `Grav2DPolyMisf` misfit structures.  
+"""
 function vecmodpar2jointstruct(magmisf::Mag2DPolyMisf,gravmisf::Grav2DPolyMisf,
                                curbodyindices::Vector{<:Vector{<:Integer}},modpar::Vector{<:Real})
     ## separate "curbodyindices" is necessary because the bodyindices might not be in sync
@@ -300,10 +309,12 @@ end
 #############################################
 ##########################################
 
+"""
+$(TYPEDSIGNATURES)
 
-function vecmodpar2vertices(magmisf::Mag2DPolyMisf,gravmisf::Grav2DPolyMisf,modpar::Vector{<:Real})
-    ## separate "curbodyindices" is necessary because the bodyindices might not be in sync
-    ##  with the iterations of HMC, so they must be taken from the .h5 file.
+Function to extract a list of polygon vertices from i) both `Mag2DPolyMisf` and `Grav2DPolyMisf` misfit structures and ii) a vector of model parameters the user would like to invert.
+"""
+function vecmodpar2jointvertices(magmisf::Mag2DPolyMisf,gravmisf::Grav2DPolyMisf,modpar::Vector{<:Real})
 
     whichparmag = magmisf.whichpar
     whichpargrav = gravmisf.whichpar
@@ -350,7 +361,7 @@ function vecmodpar2vertices(magmisf::Mag2DPolyMisf,gravmisf::Grav2DPolyMisf,modp
         allvert = reshape(modpar,nvert,2)
 
     else
-        error("vecmodpar2vertices(): Wrong argument 'magmisf.whichpar' and/or 'gravmisf.whichpar'. Aborting.")
+        error("vecmodpar2jointvertices(): Wrong argument 'magmisf.whichpar' and/or 'gravmisf.whichpar'. Aborting.")
     end
     
 

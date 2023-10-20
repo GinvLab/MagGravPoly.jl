@@ -14,7 +14,7 @@ Depth = 4
 
 # User guide
 
-**MagGrav2Dpoly** is a Julia package to perform magnetic and gravity anomaly calculations using a 2D or 2.75D parameterization in terms of polygons with uniform arbitrary magnetizations and density contrasts. It provides functions to both solve the forward problem and to calculate the gradient of a given misfit function. Such functions can be used to solve inverse problems both in the deterministic and probabilistic approach. In particular, this package provides some functions to solve inverse problems using the Hamiltonian Monte Carlo (HMC) method, as part of the `HMCLab` project (see the  `HMCSampler.jl` package). Gradients are calculated using the technique of automatic differentiation.
+**MagGrav2Dpoly** is a Julia package to perform magnetic and gravity anomaly calculations using a 2D or 2.75D parameterization in terms of polygons with uniform arbitrary magnetizations and density contrasts. It provides functions to both solve the forward problem and to calculate the gradient of a given misfit function. Such functions can be used to solve inverse problems both in the deterministic and probabilistic approach. In particular, this package provides some functions to solve inverse problems using the Hamiltonian Monte Carlo (HMC) method, as part of the [`HMCLab`](https://gitlab.com/JuliaGeoph/HMCLab.jl) project (see the  [`MCsamplers.jl`](https://gitlab.com/JuliaGeoph/MCsamplers.jl) package). Gradients are calculated using the technique of automatic differentiation.
 With this package it is also possible to perform joint magnetic and gravity forward and gradient calculations and hence solve joint inverse problems, see the tutorials below.
 
 The forward problem formulations for the magnetic case implemented in this package are the following:
@@ -32,9 +32,9 @@ If you use this code for research or else, please cite the related papers:
 
 * Zunino, Ghirotto, Armadillo, & Fichtner (2022). **Hamiltonian Monte Carlo probabilistic joint inversion of 2D (2.75D) gravity and magnetic data**. *Geophysical Research Letters*,  49, e2022GL099789. https://doi.org/10.1029/2022GL099789.
 
-Regarding solving the inverse problem with the HMC method, please see the following paper and check out the package `HMCSampler.jl`:
+Regarding solving the inverse problem with the HMC method, please see the following paper and check out the package `MCsamplers`:
 
-* Zunino, Gebraad, Ghirotto, & Fichtner (2023). **HMCLab: a framework for solving diverse geophysical inverse problems using the Hamiltonian Monte Carlo method**. in prep.
+* Zunino, Gebraad, Ghirotto, & Fichtner (2023). **HMCLab: a framework for solving diverse geophysical inverse problems using the Hamiltonian Monte Carlo method**. Accepted in *Geophysical Journal International*.
 
 In addition, a tutorial about the use of forward formulations and the basic tuning strategies for HMC inversion is presented in detail in the below section.
 
@@ -44,11 +44,11 @@ In addition, a tutorial about the use of forward formulations and the basic tuni
 To install the package first enter into the package manager mode in Julia by typing "`]`" at the 
 REPL prompt and add the "JuliaGeoph" registry as
 ```
-(@v1.8) pkg> registry add https://gitlab.com/JuliaGeoph/JuliaGeophRegistry
+(@v1.9) pkg> registry add https://gitlab.com/JuliaGeoph/JuliaGeophRegistry
 ```
 Then add the package by simply issuing
 ```
-(@v1.8) pkg> add MagGrav2Dpoly
+(@v1.9) pkg> add MagGrav2Dpoly
 ```
 The package will be automatically downloaded from the web and installed.
 
@@ -145,7 +145,7 @@ using CairoMakie
 
 fig = Figure()
 
-ax1 = Axis(fig[1,1],title="Magity anomaly",xlabel="x",ylabel="mag. anom.")
+ax1 = Axis(fig[1,1],title="Magnetic anomaly",xlabel="x",ylabel="mag. anom.")
 scatter!(ax1,xzobs[:,1],tmag)
 
 ax2 = Axis(fig[2,1],title="Polygonal bodies",xlabel="x",ylabel="z")
