@@ -26,8 +26,8 @@ export Joint2DpolyProb,jointprob2vec
 """
 $(TYPEDSIGNATURES)
 
-Structure to define a 'joint magnetic and gravity problem' for HMC. 
-The users must indicate the method to compute the misfit gradient for both the magnetic and gravity problem by setting the variable `ADkindmag` and `ADkindgrav` respectively, choosing among `FWDdiff`, `REVdiffTAPE` or `REVdiffTAPEcomp`. 
+Julia structure to define a joint magnetic and gravity problem for HMC. 
+The users must indicate the method to compute misfit gradient for both the magnetic and gravity problem by `ADkindmag` and `ADkindgrav` strings, respectively, choosing among `FWDdiff`, `REVdiffTAPE` or `REVdiffTAPEcomp`. 
 For an explanation of the automatic differentiation method, the reader is invited to look at the documentation 
 relative to the Julia packages `ForwardDiff` and `ReverseDiff`.
 """
@@ -71,6 +71,20 @@ struct Joint2DpolyProb
             Jind=nothing
             Jrem=nothing
         end
+        if jpbodystart.ylatext==nothing
+            ylatext = nothing
+        else
+            ylatext = copy(jpbodystart.ylatext)
+        end
+
+        println(" ---------------------------------------------------") 
+        if ylatext==nothing
+            printstyled(" Joint magnetic & gravity problem type: 2D\n",bold=true,color=:light_yellow)
+        elseif -ylatext[1]==ylatext[2]
+            printstyled(" Joint magnetic & gravity problem type: 2.5D\n",bold=true,color=:light_yellow)
+        else
+            printstyled(" Joint magnetic & gravity problem type: 2.75D\n",bold=true,color=:light_yellow)
+        end
         
         # Instantiate the misfit type
         magmisf = Mag2DPolyMisf(jpbodystart.geom.bodyindices,northxax,mag_xzobs,mag_obsdata,mag_invCd,mag_whichpar,
@@ -88,6 +102,7 @@ struct Joint2DpolyProb
             grav_allvert=jpbodystart.geom.allvert
             rho=nothing
         end
+        
         # Instantiate the misfit type
         gravmisf = Grav2DPolyMisf(jpbodystart.geom.bodyindices,grav_xzobs,grav_obsdata,grav_invCd,
                                   grav_whichpar,allvert=grav_allvert,rho=rho,
@@ -114,25 +129,20 @@ struct Joint2DpolyProb
         # checks on whichpar for both grav and mag misf
         if magmisf.whichpar==:all && gravmisf.whichpar==:all
             println(" ---------------------------------------------------")
-            printstyled("\n Parameters to invert for: Vertices + Magnetization + Density\n",bold=false,color=:yellow)
-            println(" ---------------------------------------------------")
+            printstyled(" Parameters to invert for: Vertices + Magnetization + Density\n",bold=true,color=:light_red)
         elseif magmisf.whichpar==:vertices && gravmisf.whichpar==:all
             println(" ---------------------------------------------------") 
-            printstyled(" Parameters to invert for: Vertices + Density\n",bold=false,color=:yellow)
-            println(" ---------------------------------------------------")
+            printstyled(" Parameters to invert for: Vertices + Density\n",bold=true,color=:light_red)
         elseif magmisf.whichpar==:all && gravmisf.whichpar==:vertices
             println(" ---------------------------------------------------")
-            printstyled(" Parameters to invert for: Vertices + Magnetization\n",bold=false,color=:yellow)
-            println(" ---------------------------------------------------")
+            printstyled(" Parameters to invert for: Vertices + Magnetization\n",bold=true,color=:light_red)
         elseif magmisf.whichpar==:magnetization && gravmisf.whichpar==:density
             @assert magmisf.allvert==gravmisf.allvert
             println(" ---------------------------------------------------")
-            printstyled(" Parameters to invert for: Magnetization + Density\n",bold=false,color=:yellow)
-            println(" ---------------------------------------------------")
+            printstyled(" Parameters to invert for: Magnetization + Density\n",bold=true,color=:light_red)
         elseif magmisf.whichpar==:vertices && gravmisf.whichpar==:vertices
             println(" ---------------------------------------------------")
-            printstyled(" Parameters to invert for: Vertices\n",bold=false,color=:yellow)
-            println(" ---------------------------------------------------")
+            printstyled(" Parameters to invert for: Vertices\n",bold=true,color=:light_red)
         else
             error("Joint2DpolyProb(): Wrong argument 'magmisf.whichpar' and/or 'gravmisf.whichpar': possible choices are: 
                 - magmisf.whichpar==:vertices && gravmisf.whichpar==:vertices;
