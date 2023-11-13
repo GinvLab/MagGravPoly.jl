@@ -88,10 +88,10 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Function to compute the gradient of the misfit functional with respect to the model parameters as required for HMC inversions. 
-The gradient is computed by means of automatic differentiation using one of three different methods. The user must indicate the method by the `ADkind` variable, choosing among `FWDdiff`, `REVdiffTAPE` or `REVdiffTAPEcomp`. 
+Function to compute the gradient of the misfit with respect to the model parameters as required for HMC inversions. 
+The gradient is computed by means of automatic differentiation using one of three different methods. The user must indicate the method by `ADkind` string, choosing among `FWDdiff`, `REVdiffTAPE` or `REVdiffTAPEcomp`. 
 For an explanation about the automatic differentiation method, the reader is invited to look at the documentation 
-relative to the Julia package `ForwardDiff` and `ReverseDiff`.  
+relative to the Julia packages `ForwardDiff` and `ReverseDiff`.  
 """  
 function calc∇misfjointmaggrav(magmisf::Mag2DPolyMisf,gravmisf::Grav2DPolyMisf,ADkindmag::String,
                                ADkindgrav::String,vecmodpar::AbstractArray,

@@ -71,7 +71,7 @@ end
 $(TYPEDSIGNATURES)
 
  Total magnetic field (2D) for a polygon defined by its corners. Takes into account both induced and remnant magnetization.
-Based on Talwani & Heitzler (1964), the default algorithm in Mag2Dpoly package. 
+Based on Talwani & Heitzler (1964), the default algorithm in MagGrav2Dpoly package. 
 """
 function tmagpoly2D(xzobs::Array{<:Real,2},Jindmod::Real,JindIdeg::Real,JindDdeg::Real,
                     Jremmod::Real,JremIdeg::Real,JremDdeg::Real,
@@ -172,7 +172,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
- Total magnetic field (2.5D) for a polygon defined by its corners. Takes into account both induced and remnant magnetization.
+ Total magnetic field (2.75D) for a polygon defined by its corners. Takes into account both induced and remnant magnetizations.
 Based on Rasmussen & Pedersen (1979) and Campbell (1983). 
 """
 function tmagpoly2_75D(xzobs::Array{<:Real,2},Jindmod::Real,JindIdeg::Real,JindDdeg::Real,
@@ -274,7 +274,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
- Total magnetic field (2D) calculation for a polygon defined by its corners. Takes into account both induced and remnant magnetization.
+ Total magnetic field (2D) calculation for a polygon defined by its corners. Takes into account both induced and remnant magnetizations.
 Generic version containing four different algorithm formulations `forwardtype`, passed as a string:
   - "talwani"      --> Talwani & Heitzler (1964)
   - "talwani_red"  --> Talwani & Heitzler (1964) rederived from Kravchinsky et al. (2019)
@@ -375,7 +375,7 @@ end
 """
 $(TYPEDSIGNATURES)
  
- Total magnetic field (2D) calculation for a polygon side defined by its corners. Takes into account both induced and remnant magnetization. Formulas from Talwani & Heitzler (1964).
+ Total magnetic field (2D) calculation for a polygon side defined by its corners. Takes into account both induced and remnant magnetizations. Formulas from Talwani & Heitzler (1964).
 """
 function tmagtalwani(x1::Real,z1::Real,x2::Real,z2::Real,
                      Jx::Real,Jz::Real,Iind::Real,Dind::Real,C::Real)
@@ -458,7 +458,7 @@ end
 """
 $(TYPEDSIGNATURES)
  
- Total magnetic field (2.75D) calculation for a polygon side defined by its corners. Takes into account both induced and remnant magnetization. Formulas derived from Rasmussen & Pedersen (1979) and Campbell (1983).
+ Total magnetic field (2.75D) calculation for a polygon side defined by its corners. Takes into account both induced and remnant magnetizations. Formulas derived from Rasmussen & Pedersen (1979) and Campbell (1983).
 """
 function tmag2_75D(x1::Real,y1::Real,z1::Real,x2::Real,y2::Real,z2::Real,
                   Jx::Real,Jy::Real,Jz::Real,Iind::Real,Dind::Real,C::Real)
@@ -574,7 +574,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
- Total magnetic field (2D) calculation for a polygon side defined by its corners. Takes into account both induced and remnant magnetization. Formulas from Kravchinsky et al (2019) rectified by Ghirotto et al. (2021). 
+ Total magnetic field (2D) calculation for a polygon side defined by its corners. Takes into account both induced and remnant magnetizations. Formulas from Kravchinsky et al (2019) rectified by Ghirotto et al. (2021). 
 """
 function tmagkrav(x1::Real,z1::Real,x2::Real,z2::Real,
                   Jtotx::Real,Jtotz::Real,Iind::Real,Dind::Real,Cnorth::Real)
@@ -670,7 +670,7 @@ end
 """ 
 $(TYPEDSIGNATURES)
 
- Total magnetic field (2D) calculation for a polygon side defined by its corners. Takes into account both induced and remnant magnetization. Formulas from Talwani & Heitzler (1964) modified by Kravchinsky et al. (2019).
+ Total magnetic field (2D) calculation for a polygon side defined by its corners. Takes into account both induced and remnant magnetizations. Formulas from Talwani & Heitzler (1964) modified by Kravchinsky et al. (2019).
 """
 function tmagtalwanired(x1::Real,z1::Real,x2::Real,z2::Real,
                         Jx::Real,Jz::Real,Iind::Real,Dind::Real,C::Real)
@@ -778,7 +778,7 @@ end
 """ 
 $(TYPEDSIGNATURES)
 
- Total magnetic field (2D) calculation for a polygon side defined by its corners. Takes into account both induced and remnant magnetization. Formulas from Won & Bevis (1987).
+ Total magnetic field (2D) calculation for a polygon side defined by its corners. Takes into account both induced and remnant magnetizations. Formulas from Won & Bevis (1987).
 """
 function tmagwonbev(x1::Real,z1::Real,x2::Real,z2::Real,
                     modJind::Real,modJrem::Real,Iind::Real,Dind::Real,

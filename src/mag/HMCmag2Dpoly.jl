@@ -30,10 +30,10 @@ export Mag2DpolyProb,magprob2vec
 """
 $(TYPEDSIGNATURES)
 
-Julia structure to define the HMC problem the user would like to perform.
+Julia structure to define a magnetic problem for HMC.
 The users must indicate the method to compute misfit gradient by `ADkind` string, choosing among `FWDdiff`, `REVdiffTAPE` or `REVdiffTAPEcomp`. 
-For an explanation about Automatic Differentiation method, the reader is invited to look at the documentation 
-relative to the Julia package `ForwardDiff` and `ReverseDiff`. 
+For an explanation of the automatic differentiation method, the reader is invited to look at the documentation 
+relative to the Julia packages `ForwardDiff` and `ReverseDiff`. 
 """
 struct Mag2DpolyProb
     magmisf::Mag2DPolyMisf
@@ -74,13 +74,14 @@ struct Mag2DpolyProb
         else
             ylatext = copy(pbodystart.ylatext)
         end
-        
+
+        println(" ---------------------------------------------------")
         if ylatext==nothing
-            printstyled(" Magnetic problem type: 2D\n",bold=false,color=:yellow)
+            printstyled(" Magnetic problem type: 2D\n",bold=true,color=:light_yellow)
         elseif -ylatext[1]==ylatext[2]
-            printstyled(" Magnetic problem type: 2.5D\n",bold=false,color=:yellow)
+            printstyled(" Magnetic problem type: 2.5D\n",bold=true,color=:light_yellow)
         else
-            printstyled(" Magnetic problem type: 2.75D\n",bold=false,color=:yellow)
+            printstyled(" Magnetic problem type: 2.75D\n",bold=true,color=:light_yellow)
         end
 
         # Instantiate the misfit type
@@ -98,16 +99,13 @@ struct Mag2DpolyProb
         # Print whichpar for mag misf
         if magmisf.whichpar==:all
             println(" ---------------------------------------------------")
-            printstyled("\n Type Parameters to Invert: Vertices + Magnetization\n",bold=true,color=:light_red)
-            println("\n ---------------------------------------------------")
+            printstyled(" Parameters to invert for: Vertices + Magnetization\n",bold=true,color=:light_red)
         elseif magmisf.whichpar==:vertices
             println(" ---------------------------------------------------")
-            printstyled("\n Type Parameters to Invert: Vertices\n",bold=true,color=:light_red)
-            println("\n ---------------------------------------------------")
+            printstyled(" Parameters to invert for: Vertices\n",bold=true,color=:light_red)
         elseif magmisf.whichpar==:magnetization
             println(" ---------------------------------------------------")
-            printstyled("\n Type Parameters to Invert: Magnetization\n",bold=true,color=:light_red)
-            println("\n ---------------------------------------------------")
+            printstyled(" Parameters to invert for: Magnetization\n",bold=true,color=:light_red)
         end
         
         return new(magmisf,topography,mag_ADkind,firsttime_grad,autodiffstuff,

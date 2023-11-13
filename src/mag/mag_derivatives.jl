@@ -17,8 +17,8 @@
     """
 $(TYPEDSIGNATURES)
 
-Julia structure to contain all data required for both misfit and misfit gradient calculation.
-The `whichpar` Symbol indicates which paramters the user would like to invert. It should be `:all`, `:vertices` or `:magnetization`.  
+Julia structure containing all data required for both misfit and gradient calculations.
+The `whichpar` Symbol indicates which paramters the user would like to invert for. It should be `:all`, `:vertices` or `:magnetization`.  
 """
 struct Mag2DPolyMisf{I<:Integer,F<:Real}
     bodyindices::Vector{Vector{<:I}}
@@ -251,9 +251,9 @@ end
 $(TYPEDSIGNATURES)
 
 Function to compute the gradient of misfit with respect to the model parameters required for HMC inversions. 
-The gradient is computed by means of automatic differentiation using one of three different methods. The user must indicate the method by the `ADkind` variable, choosing among `FWDdiff`, `REVdiffTAPE` or `REVdiffTAPEcomp`. 
+The gradient is computed by means of automatic differentiation using one of three different methods. The user must indicate the method by `ADkind` string, choosing among `FWDdiff`, `REVdiffTAPE` or `REVdiffTAPEcomp`. 
 For an explanation about the automatic differentiation method, the reader is invited to look at the documentation 
-relative to the Julia package `ForwardDiff` and `ReverseDiff`.
+relative to the Julia packages `ForwardDiff` and `ReverseDiff`.
 """  
 function calc∇misfmag(magmisf::Mag2DPolyMisf,modpar::AbstractArray, # ,whichpar::String,
                       ADkind::String,autodiffstuff )    
@@ -280,7 +280,7 @@ function calc∇misfmag(magmisf::Mag2DPolyMisf,modpar::AbstractArray, # ,whichpa
 
     nangrad = isnan.(grad)
     if any(nangrad)
-        error("∇misf(): magmisf error, isnan.(grad) = $nangrad")
+        error("calc∇misfmag(): magmisf error, isnan.(grad) = $nangrad")
     end
     return grad
 end

@@ -24,4 +24,4 @@ If you use this code for research or else, please cite the related papers:
 
 Regarding solving the inverse problem with the HMC method, please see the following paper and check out the package `MCsamplers`:
 
-* Zunino, Gebraad, Ghirotto, & Fichtner (2023). **HMCLab: a framework for solving diverse geophysical inverse problems using the Hamiltonian Monte Carlo method**. Accepted in *Geophysical Journal International*.
+* Zunino, Gebraad, Ghirotto, & Fichtner (2023). **HMCLab: a framework for solving diverse geophysical inverse problems using the Hamiltonian Monte Carlo method**. *Geophysical Journal International*, 235(3), 2979-2991. https://doi.org/10.1093/gji/ggad403.

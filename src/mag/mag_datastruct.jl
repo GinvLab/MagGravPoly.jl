@@ -26,7 +26,7 @@ end
 """
 $(TYPEDEF)
 
-Structure containing a set of polygonal bodies (described by their segments and all vertices) and their magnetic properties.
+Structure containing a set of polygonal bodies (described by their segments and all vertices) along with their magnetizations (Induced + Remanent).
 To create an instance, input an array of vectors of indices 
   (of vertices) for each body and the array of all the vertices.
 

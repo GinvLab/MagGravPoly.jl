@@ -4,7 +4,7 @@
 """
 $(TYPEDSIGNATURES)
 
- Function to return the Vertical attraction & Total magnetic field (2D or 2.75D) for a set of polygonal bodies defined by their corners.
+ Function to return the vertical attraction & total magnetic field (2D or 2.75D) for a set of polygonal bodies defined by their corners.
 Takes into account both induced and remnant magnetization.
 2D formulations based on Talwani et al. (1959), Talwani & Heitzler (1964) and Blakely (1995).
 2.75D formulations based on Rasmussen & Pedersen (1979) and Campbell (1983).

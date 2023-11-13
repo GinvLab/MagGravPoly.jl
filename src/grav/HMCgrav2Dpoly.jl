@@ -29,8 +29,8 @@ export Grav2DpolyProb,gravprob2vec
 """
 $(TYPEDSIGNATURES)
 
-Structure to define a 'problem' for HMC. 
-The users must indicate the method to compute the misfit gradient by setting the variable `ADkind`, choosing among `FWDdiff`, `REVdiffTAPE` or `REVdiffTAPEcomp`. 
+Julia structure to define a gravity problem for HMC.
+The users must indicate the method to compute the misfit gradient by `ADkind` string, choosing among `FWDdiff`, `REVdiffTAPE` or `REVdiffTAPEcomp`. 
 For an explanation of the automatic differentiation method, the reader is invited to look at the documentation 
 relative to the Julia packages `ForwardDiff` and `ReverseDiff`. 
 """
@@ -70,13 +70,14 @@ struct Grav2DpolyProb
         else
             ylatext = copy(pbodystart.ylatext)
         end
-        
+
+        println(" ---------------------------------------------------")
         if ylatext==nothing
-            printstyled(" Gravity problem type: 2D\n",bold=false,color=:yellow)
+            printstyled(" Gravity problem type: 2D\n",bold=true,color=:light_yellow)
         elseif -ylatext[1]==ylatext[2]
-            printstyled(" Gravity problem type: 2.5D\n",bold=false,color=:yellow)
+            printstyled(" Gravity problem type: 2.5D\n",bold=true,color=:light_yellow)
         else
-            printstyled(" Gravity problem type: 2.75D\n",bold=false,color=:yellow)
+            printstyled(" Gravity problem type: 2.75D\n",bold=true,color=:light_yellow)
         end
 
         # Instantiate the misfit type
@@ -94,16 +95,13 @@ struct Grav2DpolyProb
         # Print whichpar for grav misf
         if gravmisf.whichpar==:all
             println(" ---------------------------------------------------")
-            printstyled("\n Type Parameters to Invert: Vertices + Density\n",bold=true,color=:light_red)
-            println("\n ---------------------------------------------------")
+            printstyled(" Parameters to invert for: Vertices + Density\n",bold=true,color=:light_red)
         elseif gravmisf.whichpar==:vertices
             println(" ---------------------------------------------------")
-            printstyled("\n Type Parameters to Invert: Vertices\n",bold=true,color=:light_red)
-            println("\n ---------------------------------------------------")
+            printstyled(" Parameters to invert for: Vertices\n",bold=true,color=:light_red)
         elseif gravmisf.whichpar==:density
             println(" ---------------------------------------------------")
-            printstyled("\n Type Parameters to Invert: Density\n",bold=true,color=:light_red)
-            println("\n ---------------------------------------------------")
+            printstyled(" Parameters to invert for: Density\n",bold=true,color=:light_red)
         end
         
         return new(gravmisf,topography,grav_ADkind,firsttime_grad,autodiffstuff,
