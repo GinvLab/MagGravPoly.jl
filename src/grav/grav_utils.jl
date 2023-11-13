@@ -6,7 +6,7 @@ $(TYPEDSIGNATURES)
 Compute the DC-Shift of gravity data. There are two possibilities for `type`:
 - :auto
 - :ref_obs
-See the Grav2Dpoly manual for details and explanations.
+See the MagGrav2Dpoly manual for details and explanations.
 """
 function grav_dcshift!(tgravobs::Vector{<:Real},type::Symbol;id::Union{Nothing,<:Integer}=nothing)
 
@@ -73,13 +73,11 @@ function printgravmodparinfo(mstart,bodyindices,grav_whichpar,mlow,mup)
     vecparu[:,2].=mup
     
     println(" ---------------------------------------------------")
-    printstyled("\n Lower constrains for model parameters:\n",bold=true,color=:light_cyan)
+    printstyled(" Lower constraints for model parameters:\n",bold=true,color=:light_cyan)
     pretty_table(vecparl, noheader = true, crop = :horizontal, formatters = ft_round(3))
-    println("\n ---------------------------------------------------")
 
-    printstyled("\n Upper constrains for model parameters:\n",bold=true,color=:light_cyan)
+    printstyled(" Upper constraints for model parameters:\n",bold=true,color=:light_cyan)
     pretty_table(vecparu, noheader = true, crop = :horizontal, formatters = ft_round(3))  
-    println("\n ---------------------------------------------------")
     
     return nothing
 end

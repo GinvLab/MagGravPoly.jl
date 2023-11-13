@@ -67,14 +67,12 @@ function printjointmodparinfo(mstart,bodyindices,mag_whichpar,grav_whichpar,mlow
     vecparl[:,2].=mlow
     vecparu[:,2].=mup
     
-    #println(" ---------------------------------------------------")
-    printstyled("\n Lower constrains for model parameters:\n",bold=false,color=:yellow)
+    println(" ---------------------------------------------------")
+    printstyled(" Lower constraints for model parameters:\n",bold=true,color=:light_cyan)
     pretty_table(vecparl, noheader = true, crop = :horizontal, formatters = ft_round(3))
-    #println("\n ---------------------------------------------------")
 
-    printstyled("\n Upper constrains for model parameters:\n",bold=false,color=:yellow)
+    printstyled(" Upper constraints for model parameters:\n",bold=true,color=:light_cyan)
     pretty_table(vecparu, noheader = true, crop = :horizontal, formatters = ft_round(3))  
-    println()#"\n ---------------------------------------------------")
     
     return nothing
 end
