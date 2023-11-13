@@ -7,7 +7,7 @@
 """
 $(TYPEDSIGNATURES)
 
-Function to create a vector of model parameters the user would like to invert from a `JointPolygBodies2D` polygons structure. For this purpose is required as input even both `Mag2DPolyMisf` and `Grav2DPolyMisf` misfit structures.  
+Function to create a vector of model parameters proving as input i) the type of parameters the user would like to invert for (gravity + magnetic problems) and ii) a `JointPolygBodies2D` polygons structure.  
 """
 function jointstruct2vec(mag_whichpar::Symbol,grav_whichpar::Symbol,jointpbod::JointPolygBodies2D)
 
@@ -173,7 +173,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Function to reconstruct a `JointPolygBodies2D` polygons structure from i) a list of `bodyindices` and ii) a vector of model parameters the user would like to invert. For this purpose is required as input even both `Mag2DPolyMisf` and `Grav2DPolyMisf` misfit structures.  
+Function to reconstruct a `JointPolygBodies2D` polygons structure from i) both `Mag2DPolyMisf` and `Grav2DPolyMisf` misfit structures, ii) a list of `bodyindices` and iii) a vector of model parameters the user would like to invert for.  
 """
 function vecmodpar2jointstruct(magmisf::Mag2DPolyMisf,gravmisf::Grav2DPolyMisf,
                                curbodyindices::Vector{<:Vector{<:Integer}},modpar::Vector{<:Real})
@@ -312,7 +312,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Function to extract a list of polygon vertices from i) both `Mag2DPolyMisf` and `Grav2DPolyMisf` misfit structures and ii) a vector of model parameters the user would like to invert.
+Function to extract a list of polygon vertices from i) both `Mag2DPolyMisf` and `Grav2DPolyMisf` misfit structures and ii) a vector of model parameters the user would like to invert for.
 """
 function vecmodpar2jointvertices(magmisf::Mag2DPolyMisf,gravmisf::Grav2DPolyMisf,modpar::Vector{<:Real})
 

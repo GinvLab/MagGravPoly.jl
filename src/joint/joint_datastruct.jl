@@ -3,7 +3,7 @@
 """
 $(TYPEDEF)
 
-Structure containing a set of polygonal bodies (described by their segments and all vertices) and their magnetic and gravity properties.
+Structure containing a set of polygonal bodies (described by their segments and all vertices) along with their magnetizations (Induced + Remanent) and densities.
 To create an instance, input an array of vectors of indices 
   (of vertices) for each body and the array of all the vertices.
 
@@ -58,7 +58,6 @@ Base.@kwdef struct JointPolygBodies2D
                                 Aborting!")
         end
         
-
         return new(geom,Jind,Jrem,rho,outylatext)
     end
 end

@@ -4,7 +4,7 @@
 """
 $(TYPEDEF)
 
-Structure containing a set of polygonal bodies (described by their segments and all vertices) and their densities.
+Structure containing a set of polygonal bodies (described by their segments and all vertices) along with their densities.
 To create an instance, input an array of vectors of indices (of vertices) for each body and the array of all the vertices.
 
 # Fields 
@@ -45,14 +45,12 @@ struct GravPolygBodies2D
             outylatext = copy(ylatext)
 
         else
-            error("Grav2DPolyMisf(): the following options are the only valid to specify:
+            error("GravPolygBodies2D(): the following options are the only valid to specify:
                                 - ylatext=`nothing` for the pure 2D formulation;
                                 - specify only a Real number for ylatext (the code then assumes -y1=y2) for the 2.5D formulation (symmetric case);
                                 - specify both y1 and y2 as ylatext=[y1, y2] for the 2.75D formulation (asymmetric case).
                                 Aborting!")
         end
-
-
         
         return new(geom,rho,outylatext)
     end

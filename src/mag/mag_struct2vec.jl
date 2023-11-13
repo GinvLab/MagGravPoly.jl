@@ -6,7 +6,7 @@ l12(n,ncoo,nbo) = (ncoo+1+(n-1)*nbo,ncoo+n*nbo)
 """
 $(TYPEDSIGNATURES)
 
-Function to create a vector of model parameters the user would like to invert from a `MagPolygBodies2D` polygons structure. For this purpose is required as input even a `Mag2DPolyMisf` misfit structure.  
+Function to create a vector of model parameters providing as input i) the type of parameters the user would like to invert for and ii) a `MagPolygBodies2D` polygons structure.  
 """
 function magstruct2vec(whichpar::Symbol,magpbod::MagPolygBodies2D)
     
@@ -106,7 +106,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Function to reconstruct a `MagPolygBodies2D` polygons structure from i) a list of `bodyindices` and ii) a vector of model parameters the user would like to invert. For this purpose is required as input even a `Mag2DPolyMisf` misfit structure.  
+Function to reconstruct a `MagPolygBodies2D` polygons structure from i) a `Mag2DPolyMisf` misfit structure, ii) a list of `bodyindices` and iii) a vector of model parameters the user would like to invert for.   
 """
 function vecmodpar2magstruct(magmisf::Mag2DPolyMisf,curbodyindices::Vector{<:Vector{<:Integer}},modpar::Vector{<:Real})
     ## separate "curbodyindices" is necessary because the bodyindices might not be in sync
@@ -182,7 +182,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Function to extract a list of polygon vertices from i) a `Mag2DPolyMisf` misfit structure and ii) a vector of model parameters the user would like to invert.  
+Function to extract a list of polygon vertices from i) a `Mag2DPolyMisf` misfit structure and ii) a vector of model parameters the user would like to invert for.  
 """
 function vecmodpar2magvertices(magmisf::Mag2DPolyMisf,modpar::Vector{<:Real})
 

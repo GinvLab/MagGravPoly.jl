@@ -123,7 +123,7 @@ end
 """
 $(TYPEDSIGNATURES)
 
- Vertical attraction (2.5D) for a polygon defined by its corners. 
+ Vertical attraction (2.75D) for a polygon defined by its corners. 
 Based on Rasmussen & Pedersen (1979). 
 """
 function tgravpoly2_75D(xzobs::Array{<:Real,2},ρ::Real,body::BodySegments2D,
