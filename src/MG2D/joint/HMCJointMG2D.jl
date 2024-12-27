@@ -1,17 +1,17 @@
 
 """
-HMCJointMagGrav2Dpoly
+HMCJointMG2D
 
-A convenience module to facilitate the use of both magnetic and gravity forward codes in `MagGrav2Dpoly` within the framework of Hamiltonian Monte Carlo inversion by employing the package `MCsamplers.jl`. 
+A convenience module to facilitate the use of both magnetic and gravity forward codes in `MG2D` within the framework of Hamiltonian Monte Carlo inversion by employing the package `InverseAlgos.Samplers.jl`. 
 
 # Exports
 
 $(EXPORTS)
 """
-module HMCJointMagGrav2Dpoly
+module HMCJointMG2D 
 
-using MagGrav2Dpoly
-using GeoPolygons
+using ..MG2D
+using ..GeoPolygons
 using ForwardDiff
 using ReverseDiff
 using DocStringExtensions
@@ -190,7 +190,7 @@ function (joint2dprob::Joint2DpolyProb)(vecmodpar::Vector{Float64},kind::Symbol)
 
             ############### Mag ################
 
-            joint2dprob.autodiffstuffmag[] = MagGrav2Dpoly.precalcADstuffmag(joint2dprob.magmisf,joint2dprob.ADkindmag,
+            joint2dprob.autodiffstuffmag[] = MG2D.precalcADstuffmag(joint2dprob.magmisf,joint2dprob.ADkindmag,
                                                                          vecmodmag)
 
             # if joint2dprob.ADkindmag=="REVdiffTAPE"
@@ -219,7 +219,7 @@ function (joint2dprob::Joint2DpolyProb)(vecmodpar::Vector{Float64},kind::Symbol)
 
             ############### Grav ################
 
-            joint2dprob.autodiffstuffgrav[] = MagGrav2Dpoly.precalcADstuffgrav(joint2dprob.gravmisf,joint2dprob.ADkindgrav,
+            joint2dprob.autodiffstuffgrav[] = MG2D.precalcADstuffgrav(joint2dprob.gravmisf,joint2dprob.ADkindgrav,
                                                                             vecmodgrav)
 
             # if joint2dprob.ADkindgrav=="REVdiffTAPE"
@@ -356,8 +356,8 @@ end
 
 function splitmaggrav(joint2dprob::Joint2DpolyProb,vecmodpar::Vector)
 
-    vecmodmag,vecmodgrav = MagGrav2Dpoly.splitmaggrav(joint2dprob.magmisf,
-                                                      joint2dprob.gravmisf,vecmodpar)
+    vecmodmag,vecmodgrav = MG2D.splitmaggrav(joint2dprob.magmisf,
+                                             joint2dprob.gravmisf,vecmodpar)
 
 
     # nbi = length(joint2dprob.orgbodyindices)
@@ -411,11 +411,11 @@ function ∇misfjoint(joint2dprob::Joint2DpolyProb,vecmodmag::AbstractArray,vecm
     # vecmodmag,vecmodgrav = splitmaggrav(joint2dprob,vecmodpar)
     
     # compute separate gradients for mag & grav
-    gradmag = MagGrav2Dpoly.calc∇misfmag(joint2dprob.magmisf,vecmodmag,
+    gradmag = MG2D.calc∇misfmag(joint2dprob.magmisf,vecmodmag,
                               joint2dprob.ADkindmag,joint2dprob.autodiffstuffmag[])
     
     
-    gradgrav = MagGrav2Dpoly.calc∇misfgrav(joint2dprob.gravmisf,vecmodgrav,
+    gradgrav = MG2D.calc∇misfgrav(joint2dprob.gravmisf,vecmodgrav,
                                 joint2dprob.ADkindgrav,joint2dprob.autodiffstuffgrav[])
 
     

@@ -3,8 +3,7 @@
 #--------------------------------------------------------#
 
 
-using Test
-using GeoPolygons
+using MagGravPoly.GeoPolygons
 
 ########################################
 

@@ -6,9 +6,14 @@ MagGravPoly
 """
 module MagGravPoly
 
-export MagGrav2Dpoly
+#export GeoPolygons
+export MG2D
 
+# include but do not export GeoPolygons
 include("GeoPolygons/GeoPolygons.jl")
-include("MagGrav2Dpoly/MagGrav2Dpoly.jl")
+
+# MagGrav2Dpoly
+include("MG2D/MG2D.jl")
+
 
 end # module MagGravPoly

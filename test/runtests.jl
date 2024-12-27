@@ -1,4 +1,5 @@
 
+using Test
 
 include("mag_runtests.jl")
 
@@ -6,13 +7,14 @@ include("grav_runtests.jl")
 
 include("joint_runtests.jl")
 
+include("poly_runtests.jl")
 
 #-------------------------------------------------------#
 #-------------------------TEST--------------------------#
 #-------------------------------------------------------#
 
 
-@testset "MagGrav2Dpoly tests" begin
+@testset "MG2D tests" begin
     
     printstyled("\nMagnetic anomalies \n", bold=true,color=:yellow)
     
@@ -48,5 +50,19 @@ include("joint_runtests.jl")
 
     printstyled("Gradient calculation \n", bold=true,color=:cyan)
     @test joint_testgrad()
+
+end
+
+
+
+@testset "GeoPolygons tests" begin
+    
+    printstyled("\nTesting polygon assembly \n", bold=true,color=:yellow)
+    
+    printstyled("Single polygon \n", bold=true,color=:cyan)
+    @test poly_assembly1()
+
+    printstyled("Two polygons \n", bold=true,color=:cyan)
+    @test poly_assembly2()    
 
 end

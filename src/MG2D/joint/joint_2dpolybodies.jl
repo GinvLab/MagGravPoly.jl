@@ -20,8 +20,8 @@ function tjointpolybodies2D(grav_xzobs::Array{<:Real,2},mag_xzobs::Array{<:Real,
     if pbodies.ylatext==nothing
         # 2D formulation
         for i=1:nbody
-            tgrav .+= MagGrav2Dpoly.tgravpoly2D(grav_xzobs,pbodies.rho[i],pbodies.geom.bo[i])
-            tmag .+= MagGrav2Dpoly.tmagpoly2D(mag_xzobs,pbodies.Jind.mod[i],pbodies.Jind.Ideg[i],pbodies.Jind.Ddeg[i],
+            tgrav .+= MG2D.tgravpoly2D(grav_xzobs,pbodies.rho[i],pbodies.geom.bo[i])
+            tmag .+= MG2D.tmagpoly2D(mag_xzobs,pbodies.Jind.mod[i],pbodies.Jind.Ideg[i],pbodies.Jind.Ddeg[i],
                                 pbodies.Jrem.mod[i],pbodies.Jrem.Ideg[i],pbodies.Jrem.Ddeg[i],
                                 northxax,pbodies.geom.bo[i])
         end
@@ -29,8 +29,8 @@ function tjointpolybodies2D(grav_xzobs::Array{<:Real,2},mag_xzobs::Array{<:Real,
     else
         # 2.75D formulation
         for i=1:nbody
-            tgrav .+= MagGrav2Dpoly.tgravpoly2_75D(grav_xzobs,pbodies.rho[i],pbodies.geom.bo[i],pbodies.ylatext[1],pbodies.ylatext[2])
-            tmag .+= MagGrav2Dpoly.tmagpoly2_75D(mag_xzobs,pbodies.Jind.mod[i],pbodies.Jind.Ideg[i],pbodies.Jind.Ddeg[i],
+            tgrav .+= MG2D.tgravpoly2_75D(grav_xzobs,pbodies.rho[i],pbodies.geom.bo[i],pbodies.ylatext[1],pbodies.ylatext[2])
+            tmag .+= MG2D.tmagpoly2_75D(mag_xzobs,pbodies.Jind.mod[i],pbodies.Jind.Ideg[i],pbodies.Jind.Ddeg[i],
                                   pbodies.Jrem.mod[i],pbodies.Jrem.Ideg[i],pbodies.Jrem.Ddeg[i],
                                   northxax,pbodies.geom.bo[i],pbodies.ylatext[1],pbodies.ylatext[2])
         end
@@ -66,8 +66,8 @@ function tjointpolybodies2Dgen(grav_xzobs::Array{<:Real,2},mag_xzobs::Array{<:Re
     
     # 2D formulation based on forwtype_grav & forwtype_mag 
     for i=1:nbody
-        tgrav .+= MagGrav2Dpoly.tgravpoly2Dgen(grav_xzobs,pbodies.rho[i],pbodies.geom.bo[i],forwtype_grav)
-        tmag .+= MagGrav2Dpoly.tmagpoly2Dgen(mag_xzobs,pbodies.Jind.mod[i],pbodies.Jind.Ideg[i],pbodies.Jind.Ddeg[i],
+        tgrav .+= MG2D.tgravpoly2Dgen(grav_xzobs,pbodies.rho[i],pbodies.geom.bo[i],forwtype_grav)
+        tmag .+= MG2D.tmagpoly2Dgen(mag_xzobs,pbodies.Jind.mod[i],pbodies.Jind.Ideg[i],pbodies.Jind.Ddeg[i],
                                          pbodies.Jrem.mod[i],pbodies.Jrem.Ideg[i],pbodies.Jrem.Ddeg[i],
                                          northxax,pbodies.geom.bo[i],forwtype_mag)
     end

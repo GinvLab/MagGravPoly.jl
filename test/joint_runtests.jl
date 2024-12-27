@@ -3,8 +3,7 @@
 #--------------------------------------------------------#
 
 
-using Test
-using MagGrav2Dpoly
+using MagGravPoly.MG2D
 using LinearAlgebra
 
 ########################################
@@ -339,7 +338,7 @@ function joint_testgrad()
 
 
     # model parameters vector definition
-    modpar = MagGrav2Dpoly.jointstruct2vec(magmisf.whichpar,gravmisf.whichpar,pbody)
+    modpar = MG2D.jointstruct2vec(magmisf.whichpar,gravmisf.whichpar,pbody)
     
     sameres1 = zeros(Bool,3)
         

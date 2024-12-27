@@ -2,7 +2,7 @@
 """
 HMCMag2Dpoly
 
-A convenience module to facilitate the use of the magnetic forward code in `MagGrav2Dpoly` within the framework of Hamiltonian Monte Carlo inversion by employing the package `MCsamplers`. 
+A convenience module to facilitate the use of the magnetic forward code in `MG2D` within the framework of Hamiltonian Monte Carlo inversion by employing the package `MCsamplers`. 
 
 # Exports
 
@@ -10,8 +10,8 @@ $(EXPORTS)
 """
 module HMCMag2Dpoly
 
-using MagGrav2Dpoly
-using GeoPolygons
+using ..MG2D
+using ..GeoPolygons
 using ForwardDiff
 using ReverseDiff
 using DocStringExtensions
@@ -139,7 +139,7 @@ function (mag2dprob::Mag2DpolyProb)(vecmodpar::Vector{Float64},kind::Symbol)
 
         if mag2dprob.firsttime_grad[] #&& (usingrevdiff==true)
 
-            mag2dprob.autodiffstuff[] = MagGrav2Dpoly.precalcADstuffmag(mag2dprob.magmisf,mag2dprob.ADkind,vecmodpar)
+            mag2dprob.autodiffstuff[] = MG2D.precalcADstuffmag(mag2dprob.magmisf,mag2dprob.ADkind,vecmodpar)
 
             # if mag2dprob.ADkind=="REVdiffTAPE"
             #     mag2dprob.autodiffstuff[] = ReverseDiff.GradientTape(mag2dprob.magmisf,vecmodpar)
@@ -168,7 +168,7 @@ function (mag2dprob::Mag2DpolyProb)(vecmodpar::Vector{Float64},kind::Symbol)
         end
 
         # compute gradient
-        vecgrad = MagGrav2Dpoly.calc∇misfmag(mag2dprob.magmisf,vecmodpar,
+        vecgrad = MG2D.calc∇misfmag(mag2dprob.magmisf,vecmodpar,
                         mag2dprob.ADkind,mag2dprob.autodiffstuff[])
         
         # return flattened gradient
@@ -298,7 +298,7 @@ function hmcpolycheckmag!(magprob::Mag2DpolyProb,mcur::Vector{Float64},mnew::Vec
    
     #-------------------------
     ## create some structures
-    qbody = MagGrav2Dpoly.vecmodpar2magstruct(magprob.magmisf,magprob.magmisf.bodyindices,mnew)
+    qbody = MG2D.vecmodpar2magstruct(magprob.magmisf,magprob.magmisf.bodyindices,mnew)
 
     ##-------------------------------------------------
     # Initial check intersections of segments and with topography
@@ -378,7 +378,7 @@ function hmcpolycheckmag!(magprob::Mag2DpolyProb,mcur::Vector{Float64},mnew::Vec
         
     ##-------------------------------------------------
     ## unroll back to vectors
-    mnew .= MagGrav2Dpoly.magstruct2vec(magprob.magmisf.whichpar,qbody)
+    mnew .= MG2D.magstruct2vec(magprob.magmisf.whichpar,qbody)
 
     ## Adjust p to the new altered trajectory
     ## pnew = M * grad(K) [ from gradk(K) = M^-1 * p ]

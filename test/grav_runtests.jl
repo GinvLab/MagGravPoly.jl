@@ -3,7 +3,6 @@
 #--------------------------------------------------------#
 
 
-using Test
 using MagGravPoly.MG2D
 using LinearAlgebra
 
@@ -236,7 +235,7 @@ function grav_testgrad()
    
 
     # model parameters vector definition
-    modpar = MagGrav2Dpoly.gravstruct2vec(gravmisf.whichpar,pbody) 
+    modpar = MG2D.gravstruct2vec(gravmisf.whichpar,pbody) 
 
     # gradient of misfit calculation
     ∇msf = [zeros(length(modpar)) for i=1:nADkind]

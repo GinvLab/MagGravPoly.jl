@@ -77,9 +77,9 @@ function precalcADstuffjointmaggrav(magmisf::Mag2DPolyMisf,gravmisf::Grav2DPolyM
     
     vecmodmag,vecmodgrav = splitmaggrav(magmisf,gravmisf,vecmodpar)
 
-    autodiffstuffmag = MagGrav2Dpoly.precalcADstuffmag(magmisf,ADkindmag,vecmodmag)
+    autodiffstuffmag = MG2D.precalcADstuffmag(magmisf,ADkindmag,vecmodmag)
 
-    autodiffstuffgrav = MagGrav2Dpoly.precalcADstuffgrav(gravmisf,ADkindgrav,vecmodgrav)
+    autodiffstuffgrav = MG2D.precalcADstuffgrav(gravmisf,ADkindgrav,vecmodgrav)
     
     return autodiffstuffmag,autodiffstuffgrav
 end   

@@ -1,6 +1,6 @@
 
 """
-MagGrav2Dpoly
+MG2D
 
 A module to perform magnetic and gravity anomaly calculations for 2D polygonal bodies.
 
@@ -19,8 +19,8 @@ using PrettyTables
 
 #####################################
 ## GeoPolygons
-include("../GeoPolygons/GeoPolygons.jl")
-using .GeoPolygons
+# included in MagGravPoly, so, only using it
+using ..GeoPolygons
 
 
 #####################################
@@ -100,8 +100,8 @@ using .HMCMag2Dpoly
 export Mag2DpolyProb,magprob2vec
 
 # joint
-include("joint/HMCJointMagGrav2Dpoly.jl")
-using .HMCJointMagGrav2Dpoly
+include("joint/HMCJointMG2D.jl")
+using .HMCJointMG2D
 export Joint2DpolyProb,jointprob2vec
 
 
