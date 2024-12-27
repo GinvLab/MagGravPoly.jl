@@ -4,7 +4,7 @@
 
 
 using Test
-using MagGrav2Dpoly
+using MagGravPoly.MG2D
 using LinearAlgebra
 
 ########################################

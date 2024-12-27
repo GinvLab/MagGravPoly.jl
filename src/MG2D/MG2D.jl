@@ -8,17 +8,20 @@ A module to perform magnetic and gravity anomaly calculations for 2D polygonal b
 
 $(EXPORTS)
 """
-module MagGrav2Dpoly
+module MG2D
 
-
-using GeoPolygons
 using LinearAlgebra
 using ForwardDiff
 using ReverseDiff
 using DocStringExtensions
-
-#using Statistics
 using PrettyTables
+
+
+#####################################
+## GeoPolygons
+include("../GeoPolygons/GeoPolygons.jl")
+using .GeoPolygons
+
 
 #####################################
 ## Grav-related stuff
