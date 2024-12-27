@@ -1,9 +1,6 @@
-# Contents
 
-```@contents
-Pages = ["index.md"]
-Depth = 4
-```
+# GeoPolygons
+
 
 ## User guide
 
@@ -12,18 +9,13 @@ Depth = 4
 
 ## Documentation
 
-```@meta
-Author = "Andrea Zunino"
-Author = "Alessandro Ghirotto"
-EditURL = "https://gitlab.com/JuliaGeoph/GeoPolygons.jl/-/tree/main/docs/src/"
-```
 
 ### Installation
 
 To install the package first enter into the package manager mode in Julia by typing "`]`" at the 
 REPL prompt and add the "JuliaGeoph" registry as
 ```
-(@v1.9) pkg> registry add https://gitlab.com/JuliaGeoph/JuliaGeophRegistry
+(@v1.9) pkg> registry add https://github.com/GinvLab/GinvLabRegistry
 ```
 Then add the package by simply issuing
 ```
@@ -38,7 +30,7 @@ The package will be automatically downloaded from the web and installed.
 First load the module and define a list of vertices of the poligonal bodies 
 and the relative indices mapping each body to its vertices:
 ```@example ex1
-using GeoPolygons
+using MagGravPoly.GeoPolygons
 # vertices of the poligonal bodies
 vertices  = [35.0 50.0;
              65.0 50.0;
@@ -93,7 +85,7 @@ is easy to see that is counter-clockwise oriented.
 First load the module and define a list of vertices of the poligonal bodies 
 and the relative indices mapping each body to its vertices:
 ```@example ex2
-using GeoPolygons
+using MagGravPoly.GeoPolygons
 # vertices of the poligonal bodies
 vertices  = [35.0 50.0;
              80.0 35.0;
@@ -155,13 +147,13 @@ and the results will be the following:
 
 ## Public API
 ```@docs
-GeoPolygons
+MagGravPoly.GeoPolygons
 ```
 
 ### Data structures
 ```@docs
-BodySegments2D
-PolygBodies2D
+MagGravPoly.MG2D.BodySegments2D
+MagGravPoly.MG2D.PolygBodies2D
 ```
 
 !!! warning 
@@ -173,38 +165,38 @@ PolygBodies2D
 
 
 ```@docs
-TopoEdges
+MagGravPoly.GeoPolygons.TopoEdges
 ```
 
 ### Checking-geometries functions
 #### Single polygonal body
 ```@docs
-GeoPolygons.intersectpairpoly
-GeoPolygons.selfintersectpoly
-GeoPolygons.checkall
-checkanticlockwiseorder
+MagGravPoly.GeoPolygons.intersectpairpoly
+MagGravPoly.GeoPolygons.selfintersectpoly
+MagGravPoly.GeoPolygons.checkall
+MagGravPoly.GeoPolygons.checkanticlockwiseorder
 ```
 
 #### Multiple polygonal bodies
 ```@docs
-GeoPolygons.checktopo
-GeoPolygons.checkpoly
+MagGravPoly.GeoPolygons.checktopo
+MagGravPoly.GeoPolygons.checkpoly
 ```
 
 #### Fixing-geometries functions
 ```@docs
-GeoPolygons.verpolyshift!
-GeoPolygons.verpolyallshift!
-GeoPolygons.vertoposhift!
-GeoPolygons.fixall!
+MagGravPoly.GeoPolygons.verpolyshift!
+MagGravPoly.GeoPolygons.verpolyallshift!
+MagGravPoly.GeoPolygons.vertoposhift!
+MagGravPoly.GeoPolygons.fixall!
 ```
 
 ### Useful functions
 ```@docs
-checkbodyindices
-GeoPolygons.Inter2Segm
-GeoPolygons.isInternal
-GeoPolygons.checkmodelizdim
-GeoPolygons.calcareapoly
-GeoPolygons.calcareamanypoly
+MagGravPoly.GeoPolygons.checkbodyindices
+MagGravPoly.GeoPolygons.Inter2Segm
+MagGravPoly.GeoPolygons.isInternal
+MagGravPoly.GeoPolygons.checkmodelizdim
+MagGravPoly.GeoPolygons.calcareapoly
+MagGravPoly.GeoPolygons.calcareamanypoly
 ```

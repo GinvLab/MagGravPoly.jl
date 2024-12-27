@@ -1,20 +1,15 @@
 
-```@meta
-Author = "Andrea Zunino"
-Author = "Alessandro Ghirotto"
-EditURL = "https://gitlab.com/JuliaGeoph/MagGrav2Dpoly.jl/-/tree/main/docs/src/"
-```
 
-# Contents
+# MagGravPoly
 
 ```@contents
-Pages = ["index.md"]
-Depth = 4
+Pages = ["index.md","geopolygons.md"]
+Depth = 3
 ```
 
-# User guide
+## User Guide
 
-**MagGrav2Dpoly** is a Julia package to perform magnetic and gravity anomaly calculations using a 2D or 2.75D parameterization in terms of polygons with uniform arbitrary magnetizations and density contrasts. It provides functions to both solve the forward problem and to calculate the gradient of a given misfit function. Such functions can be used to solve inverse problems both in the deterministic and probabilistic approach. In particular, this package provides some functions to solve inverse problems using the Hamiltonian Monte Carlo (HMC) method, as part of the [`HMCLab`](https://gitlab.com/JuliaGeoph/HMCLab.jl) project (see the  [`MCsamplers.jl`](https://gitlab.com/JuliaGeoph/MCsamplers.jl) package). Gradients are calculated using the technique of automatic differentiation.
+**MagGravPoly** is a Julia package to perform magnetic and gravity anomaly calculations using a 2D or 2.75D parameterization in terms of polygons with uniform arbitrary magnetizations and density contrasts. It provides functions to both solve the forward problem and to calculate the gradient of a given misfit function. Such functions can be used to solve inverse problems both in the deterministic and probabilistic approach. In particular, this package provides some functions to solve inverse problems using the Hamiltonian Monte Carlo (HMC) method, as part of the [`GinvLab`](https://github.com/GinvLab) project (see the  [`InverseAlgos.jl`](https://github.com/GinvLab/InverseAlgos.jl) package). Gradients are calculated using the technique of automatic differentiation.
 With this package it is also possible to perform joint magnetic and gravity forward and gradient calculations and hence solve joint inverse problems, see the tutorials below.
 
 The forward problem formulations for the magnetic case implemented in this package are the following:
@@ -32,7 +27,7 @@ If you use this code for research or else, please cite the related papers:
 
 * Zunino, Ghirotto, Armadillo, & Fichtner (2022). **Hamiltonian Monte Carlo probabilistic joint inversion of 2D (2.75D) gravity and magnetic data**. *Geophysical Research Letters*,  49, e2022GL099789. https://doi.org/10.1029/2022GL099789.
 
-Regarding solving the inverse problem with the HMC method, please see the following paper and check out the package `MCsamplers`:
+Regarding solving the inverse problem with the HMC method, please see the following paper and check out the package `InverseAlgos`:
 
 * Zunino, Gebraad, Ghirotto, & Fichtner (2023). **HMCLab: a framework for solving diverse geophysical inverse problems using the Hamiltonian Monte Carlo method**. *Geophysical Journal International*, 235(3), 2979-2991. https://doi.org/10.1093/gji/ggad403.
 
@@ -44,11 +39,11 @@ In addition, a tutorial about the use of forward formulations and the basic tuni
 To install the package first enter into the package manager mode in Julia by typing "`]`" at the 
 REPL prompt and add the "JuliaGeoph" registry as
 ```
-(@v1.9) pkg> registry add https://gitlab.com/JuliaGeoph/JuliaGeophRegistry
+(@v1.9) pkg> registry add https://github.com/GinvLab/GinvLabRegistry
 ```
 Then add the package by simply issuing
 ```
-(@v1.9) pkg> add MagGrav2Dpoly
+(@v1.9) pkg> add MagGravPoly
 ```
 The package will be automatically downloaded from the web and installed.
 
@@ -83,7 +78,7 @@ See the related papers and examples for inverse calculations using the HMC strat
 
 First load the module,
 ```@example ex1
-using MagGrav2Dpoly
+using MagGravPoly.MG2D
 nothing # hide
 ```
 then define an array containing the location of the observation points, where the first column represents the ``x`` position and the second the  ``z`` position. Remark: ``z`` points *downward*! So the observations have a negative ``z`` in this case.
@@ -158,7 +153,6 @@ scatterlines!(ax2,x2,y2)
 ax2.yreversed=true
 
 linkxaxes!(ax1,ax2)
-display(fig)
 
 save("images/mag.svg",fig) # hide
 ```
@@ -170,7 +164,7 @@ save("images/mag.svg",fig) # hide
 
 First load the module,
 ```@example ex2
-using MagGrav2Dpoly
+using MagGravPoly.MG2D
 nothing # hide
 ```
 then define an array containing the location of the observation points, where the first column represents the ``x`` position and the second the  ``z`` position. Remark: ``z`` points *downward*! So the observations have a negative ``z`` in this case.
@@ -241,7 +235,6 @@ scatterlines!(ax2,x2,y2)
 ax2.yreversed=true
 
 linkxaxes!(ax1,ax2)
-display(fig)
 
 save("images/grav.svg",fig) # hide
 ```
@@ -252,7 +245,7 @@ save("images/grav.svg",fig) # hide
 ## Tutorial for joint mag and grav
 First load the modules,
 ```@example ex3
-using MagGrav2Dpoly
+using MagGravPoly.MG2D
 ```
 then define 1) the angle between the Magnetic Field's North and the model profile, 2) an array containing the location of the observation points along it, where the first column represents the ``x`` position and the second the  ``z`` position. Remark: ``z`` points *downward*! So the observations have a negative ``z`` in this case.
 ```@example ex3
@@ -314,7 +307,7 @@ nothing # hide
 ```
 The output vectors are the gravity and magnetic anomalies at each of the observation points specified above.
 
-Alternatively, in the 2D case we could choose among other forward formulations implemented, specified as strings. Now we choose as forward types for the gravity and magnetic case `"wonbev"` and `"talwani_red"` respectively (see docs of `MagGrav2Dpoly` for details):
+Alternatively, in the 2D case we could choose among other forward formulations implemented, specified as strings. Now we choose as forward types for the gravity and magnetic case `"wonbev"` and `"talwani_red"` respectively (see docs of `MagGravPoly` for details):
 ```@example ex3
 pbody = JointPolygBodies2D(bodyindices,vertices,Jind,Jrem,rho,ylatext=nothing)
 nothing # hide
@@ -348,7 +341,6 @@ scatterlines!(ax3,x2,y2)
 ax3.yreversed=true
 
 linkxaxes!(ax1,ax2,ax3)
-display(fig)
 
 save("images/jointgravmag.svg",fig) # hide
 ```
@@ -359,14 +351,14 @@ save("images/jointgravmag.svg",fig) # hide
 
 ### Module
 ```@docs
-MagGrav2Dpoly
+MagGravPoly
 ```
 
 ### Data structures
 ```@docs
-MagPolygBodies2D
-GravPolygBodies2D
-JointPolygBodies2D
+MG2D.MagPolygBodies2D
+MG2D.GravPolygBodies2D
+MG2D.JointPolygBodies2D
 ```
 
 !!! warning 
@@ -379,57 +371,57 @@ JointPolygBodies2D
 
 #### Magnetics
 ```@docs
-tmagpolybodies2D
-tmagpolybodies2Dgen
+MG2D.tmagpolybodies2D
+MG2D.tmagpolybodies2Dgen
 ```
 
 #### Gravity
 ```@docs
-tgravpolybodies2D
-tgravpolybodies2Dgen
+MG2D.tgravpolybodies2D
+MG2D.tgravpolybodies2Dgen
 ```
 
 #### Joint mag and grav 
 ```@docs
-tjointpolybodies2D
-tjointpolybodies2Dgen
+MG2D.tjointpolybodies2D
+MG2D.tjointpolybodies2Dgen
 ```
 
 
 ### HMC helper functions 
 ```@docs
-Mag2DpolyProb
-Grav2DpolyProb
-Joint2DpolyProb
+MG2D.Mag2DpolyProb
+MG2D.Grav2DpolyProb
+MG2D.Joint2DpolyProb
 ```
 
 ### Misfit structure & functions 
 
 #### Magnetics
 ```@docs
-Mag2DPolyMisf
-precalcADstuffmag
-calcmisfmag
-calc∇misfmag
+MG2D.Mag2DPolyMisf
+MG2D.precalcADstuffmag
+MG2D.calcmisfmag
+MG2D.calc∇misfmag
 ```
 
 #### Gravity
 ```@docs
-Grav2DPolyMisf
-precalcADstuffgrav
-calcmisfgrav
-calc∇misfgrav
+MG2D.Grav2DPolyMisf
+MG2D.precalcADstuffgrav
+MG2D.calcmisfgrav
+MG2D.calc∇misfgrav
 ```
 
 ### Useful functions for magnetics
 !!! note
     These functions are not exported. To call them
-    type `MagGrav2Dpoly.` before the name of the functions.
+    type `MagGravPoly.MG2D` before the name of the functions.
 	
 ```@docs
-MagGrav2Dpoly.convert_H_to_B_nT
-MagGrav2Dpoly.convert_B_nT_to_H
-MagGrav2Dpoly.magcomp
+MG2D.convert_H_to_B_nT
+MG2D.convert_B_nT_to_H
+MG2D.magcomp
 ```
 
 

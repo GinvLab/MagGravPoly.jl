@@ -1,7 +1,7 @@
 [deps]
-Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-MagGravPoly = "3f9039c5-deb8-4103-9b3d-d85c0e42008e"
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+MagGravPoly = "5ad9ae14-893c-4be5-bc0a-7005514a6e19"
 
 [compat]
 Documenter = "1"
