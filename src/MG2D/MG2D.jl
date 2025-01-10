@@ -18,9 +18,9 @@ using PrettyTables
 
 
 #####################################
-## GeoPolygons
+## GeoPoly
 # included in MagGravPoly, so, only using it
-using ..GeoPolygons
+using ..GeoPoly
 
 
 #####################################

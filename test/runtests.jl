@@ -55,7 +55,7 @@ end
 
 
 
-@testset "GeoPolygons tests" begin
+@testset "GeoPoly tests" begin
     
     printstyled("\nTesting polygon assembly \n", bold=true,color=:yellow)
     

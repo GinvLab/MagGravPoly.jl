@@ -1,27 +1,10 @@
 
-# GeoPolygons
+# GeoPoly
 
 
 ## User guide
 
-**GeoPolygons** *is a Julia package utility developed for handling polygonal shapes in the framework of 2D to 2.75D potential-fields forward and inverse modeling*. 
-
-
-## Documentation
-
-
-### Installation
-
-To install the package first enter into the package manager mode in Julia by typing "`]`" at the 
-REPL prompt and add the "JuliaGeoph" registry as
-```
-(@v1.9) pkg> registry add https://github.com/GinvLab/GinvLabRegistry
-```
-Then add the package by simply issuing
-```
-(@v1.9) pkg> add GeoPolygons
-```
-The package will be automatically downloaded from the web and installed.
+**GeoPoly** *is a Julia utility contained in the package* [`MagGravPoly`](index.md#maggravpoly) *and developed for handling polygonal shapes in the framework of 2D to 2.75D potential-fields forward and inverse modeling*. 
 
 
 ### Tutorial
@@ -30,7 +13,7 @@ The package will be automatically downloaded from the web and installed.
 First load the module and define a list of vertices of the poligonal bodies 
 and the relative indices mapping each body to its vertices:
 ```@example ex1
-using MagGravPoly.GeoPolygons
+using MagGravPoly.GeoPoly
 # vertices of the poligonal bodies
 vertices  = [35.0 50.0;
              65.0 50.0;
@@ -85,7 +68,7 @@ is easy to see that is counter-clockwise oriented.
 First load the module and define a list of vertices of the poligonal bodies 
 and the relative indices mapping each body to its vertices:
 ```@example ex2
-using MagGravPoly.GeoPolygons
+using MagGravPoly.GeoPoly
 # vertices of the poligonal bodies
 vertices  = [35.0 50.0;
              80.0 35.0;
@@ -138,7 +121,7 @@ We can try to fix the polygonal geometries using the `verpolyshift!` function:
 
 ```@example ex2
 # polygon fixing
-GeoPolygons.verpolyshift!(pbody.bo)
+GeoPoly.verpolyshift!(pbody.bo)
 ```
 
 and the results will be the following:
@@ -147,56 +130,56 @@ and the results will be the following:
 
 ## Public API
 ```@docs
-MagGravPoly.GeoPolygons
+MagGravPoly.GeoPoly
 ```
 
 ### Data structures
 ```@docs
-MagGravPoly.MG2D.BodySegments2D
-MagGravPoly.MG2D.PolygBodies2D
+MagGravPoly.GeoPoly.BodySegments2D
+MagGravPoly.GeoPoly.PolygBodies2D
 ```
 
 !!! warning 
     Vertices of the polygonal bodies must be provided 
     counterclockwise to the structure `BodySegments2D`
-    to perform magnetic anomaly calculation using the
-    functions in the packages `Mag2Dpoly` and `Grav2Dpoly`.
+    to perform gravity & magnetic anomaly calculations using the
+    functions in the packages `MagGravPoly`.
 	To assess this use the function `checkanticlockwiseorder`.
 
 
 ```@docs
-MagGravPoly.GeoPolygons.TopoEdges
+MagGravPoly.GeoPoly.TopoEdges
 ```
 
 ### Checking-geometries functions
 #### Single polygonal body
 ```@docs
-MagGravPoly.GeoPolygons.intersectpairpoly
-MagGravPoly.GeoPolygons.selfintersectpoly
-MagGravPoly.GeoPolygons.checkall
-MagGravPoly.GeoPolygons.checkanticlockwiseorder
+MagGravPoly.GeoPoly.intersectpairpoly
+MagGravPoly.GeoPoly.selfintersectpoly
+MagGravPoly.GeoPoly.checkall
+MagGravPoly.GeoPoly.checkanticlockwiseorder
 ```
 
 #### Multiple polygonal bodies
 ```@docs
-MagGravPoly.GeoPolygons.checktopo
-MagGravPoly.GeoPolygons.checkpoly
+MagGravPoly.GeoPoly.checktopo
+MagGravPoly.GeoPoly.checkpoly
 ```
 
 #### Fixing-geometries functions
 ```@docs
-MagGravPoly.GeoPolygons.verpolyshift!
-MagGravPoly.GeoPolygons.verpolyallshift!
-MagGravPoly.GeoPolygons.vertoposhift!
-MagGravPoly.GeoPolygons.fixall!
+MagGravPoly.GeoPoly.verpolyshift!
+MagGravPoly.GeoPoly.verpolyallshift!
+MagGravPoly.GeoPoly.vertoposhift!
+MagGravPoly.GeoPoly.fixall!
 ```
 
 ### Useful functions
 ```@docs
-MagGravPoly.GeoPolygons.checkbodyindices
-MagGravPoly.GeoPolygons.Inter2Segm
-MagGravPoly.GeoPolygons.isInternal
-MagGravPoly.GeoPolygons.checkmodelizdim
-MagGravPoly.GeoPolygons.calcareapoly
-MagGravPoly.GeoPolygons.calcareamanypoly
+MagGravPoly.GeoPoly.checkbodyindices
+MagGravPoly.GeoPoly.Inter2Segm
+MagGravPoly.GeoPoly.isInternal
+MagGravPoly.GeoPoly.checkmodelizdim
+MagGravPoly.GeoPoly.calcareapoly
+MagGravPoly.GeoPoly.calcareamanypoly
 ```
