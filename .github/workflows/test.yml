@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  run_tests:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
