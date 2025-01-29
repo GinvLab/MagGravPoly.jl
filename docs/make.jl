@@ -10,7 +10,7 @@ makedocs(repo="https://github.com/GinvLab/MagGravPoly.jl",
          format = Documenter.HTML(prettyurls=get(ENV,"CI",nothing)=="true"),
          pages = [
              "Home - MagGravPoly" => "index.md",
-             "GeoPolygons" => "geopolygons.md"
+             "GeoPoly" => "geopoly.md"
          ],
          warnonly = [:missing_docs, :cross_references]
          )

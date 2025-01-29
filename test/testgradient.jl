@@ -1,7 +1,7 @@
 
 using Revise
 using Mag2Dpoly
-using GeoPolygons
+using GeoPoly
 using LinearAlgebra
 using ForwardDiff
 using ReverseDiff
@@ -186,7 +186,7 @@ function defineprob()
 
     pbodyref = MagPolygBodies2D(bodyindicesref,verticesref,Jindref,Jremref)
 
-    verticesref,bodyindicesref = GeoPolygons.checkbodyindices(verticesref,bodyindicesref)
+    verticesref,bodyindicesref = GeoPoly.checkbodyindices(verticesref,bodyindicesref)
 
     refmod = Mag2Dpoly.magstruct2vec(pbodyref)
     
@@ -234,7 +234,7 @@ function defineprob()
 
     vertices,bodyindices = checkbodyindices(vertices,bodyindices)
 
-    GeoPolygons.checkmodelizdim(topo,pbody.geom.bo,40.0)
+    GeoPoly.checkmodelizdim(topo,pbody.geom.bo,40.0)
 
     testmod = Mag2Dpoly.magstruct2vec(pbody)
 

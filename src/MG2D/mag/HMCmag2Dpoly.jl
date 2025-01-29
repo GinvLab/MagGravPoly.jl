@@ -11,7 +11,7 @@ $(EXPORTS)
 module HMCMag2Dpoly
 
 using ..MG2D
-using ..GeoPolygons
+using ..GeoPoly
 using ForwardDiff
 using ReverseDiff
 using DocStringExtensions
@@ -304,7 +304,7 @@ function hmcpolycheckmag!(magprob::Mag2DpolyProb,mcur::Vector{Float64},mnew::Vec
     # Initial check intersections of segments and with topography
     #--> Aborting in case of intersections
     if magprob.firstcheck[]
-        intersect = GeoPolygons.checkall(qbody.geom.bo,magprob.topography)
+        intersect = GeoPoly.checkall(qbody.geom.bo,magprob.topography)
         if !all(intersect.==:none)
             error("Possible either interesections between polygons or crossings with topography in your starting model. Re-check your parameterization! Aborting!")
         end
@@ -330,7 +330,7 @@ function hmcpolycheckmag!(magprob::Mag2DpolyProb,mcur::Vector{Float64},mnew::Vec
     
     #----------------------------------------------------
     # check intersections of segments and with topography
-    intersect = GeoPolygons.checkall(qbody.geom.bo,magprob.topography)
+    intersect = GeoPoly.checkall(qbody.geom.bo,magprob.topography)
     
     if magprob.trytofixpolygons
 
@@ -338,7 +338,7 @@ function hmcpolycheckmag!(magprob::Mag2DpolyProb,mcur::Vector{Float64},mnew::Vec
         while !all(intersect.==:none)
             
             # performing all fixing in a random order
-            GeoPolygons.fixall!(magprob.topography,qbody.geom.bo,intersect,magprob.magmisf.bodyindices,lowcon,upcon)
+            GeoPoly.fixall!(magprob.topography,qbody.geom.bo,intersect,magprob.magmisf.bodyindices,lowcon,upcon)
             
             ##-------------------------------------------------
             ## check ordering of vertices (must be anticlockwise)
@@ -354,7 +354,7 @@ function hmcpolycheckmag!(magprob::Mag2DpolyProb,mcur::Vector{Float64},mnew::Vec
                                      ylatext=magprob.magmisf.ylatext)
             
             # do intersection checks
-            intersect = GeoPolygons.checkall(qbody.geom.bo,magprob.topography)
+            intersect = GeoPoly.checkall(qbody.geom.bo,magprob.topography)
             
             clk += 1
             

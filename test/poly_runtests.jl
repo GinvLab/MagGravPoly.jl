@@ -3,7 +3,7 @@
 #--------------------------------------------------------#
 
 
-using MagGravPoly.GeoPolygons
+using MagGravPoly.GeoPoly
 
 ########################################
 

@@ -11,7 +11,7 @@ $(EXPORTS)
 module HMCJointMG2D 
 
 using ..MG2D
-using ..GeoPolygons
+using ..GeoPoly
 using ForwardDiff
 using ReverseDiff
 using DocStringExtensions
@@ -492,7 +492,7 @@ function hmcpolycheckjoint!(jointprob::Joint2DpolyProb,mcur::Vector{Float64},mne
     # Initial check intersections of segments and with topography
     #--> Aborting in ase of intersections
     if jointprob.firstcheck[]
-        intersect = GeoPolygons.checkall(qbody.geom.bo,jointprob.topography)
+        intersect = GeoPoly.checkall(qbody.geom.bo,jointprob.topography)
         if !all(intersect.==:none)
             error("Possible either interesections between polygons or crossings with topography in your starting model. Re-check your parameterization! Aborting!")
         end
@@ -519,7 +519,7 @@ function hmcpolycheckjoint!(jointprob::Joint2DpolyProb,mcur::Vector{Float64},mne
 
     #----------------------------------------------------
     # check intersections of segments and with topography
-    intersect = GeoPolygons.checkall(qbody.geom.bo,jointprob.topography)
+    intersect = GeoPoly.checkall(qbody.geom.bo,jointprob.topography)
     
     if jointprob.trytofixpolygons
 
@@ -527,7 +527,7 @@ function hmcpolycheckjoint!(jointprob::Joint2DpolyProb,mcur::Vector{Float64},mne
         while !all(intersect.==:none)
 
             # performing all fixing in a random order
-            GeoPolygons.fixall!(jointprob.topography,qbody.geom.bo,intersect,jointprob.magmisf.bodyindices,lowcon,upcon)
+            GeoPoly.fixall!(jointprob.topography,qbody.geom.bo,intersect,jointprob.magmisf.bodyindices,lowcon,upcon)
             
             ##-------------------------------------------------
             ## check ordering of vertices (must be anticlockwise)
@@ -543,7 +543,7 @@ function hmcpolycheckjoint!(jointprob::Joint2DpolyProb,mcur::Vector{Float64},mne
             qbody = JointPolygBodies2D(jointprob.magmisf.bodyindices,qbody.geom.allvert,qbody.Jind,qbody.Jrem,qbody.rho,ylatext=jointprob.magmisf.ylatext)
             
             # do intersection checks
-            intersect = GeoPolygons.checkall(qbody.geom.bo,jointprob.topography)
+            intersect = GeoPoly.checkall(qbody.geom.bo,jointprob.topography)
             
             clk += 1
             

@@ -1,6 +1,6 @@
 ##############################
 """
-GeoPolygons
+GeoPoly
 
 A module developed for handling polygonal shapes in the framework of 2D potential field forward and inverse modeling.
 
@@ -8,7 +8,7 @@ A module developed for handling polygonal shapes in the framework of 2D potentia
 
 $(EXPORTS)
 """
-module GeoPolygons
+module GeoPoly
 
 using DocStringExtensions
 using LibGEOS
