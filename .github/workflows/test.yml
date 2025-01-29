@@ -1,13 +1,13 @@
 name: Package tests
 # Run package tests
 
-on:
+on: 
   push:
     branches:
       - main
     tags: '*'
   pull_request: 
-    
+  workflow_dispatch:  
 
 # needed to allow julia-actions/cache to delete old caches that it has created
 permissions:
