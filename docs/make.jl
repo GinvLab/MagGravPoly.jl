@@ -3,7 +3,7 @@
 using Documenter, MagGravPoly
 
 
-makedocs(repo="https://github.com/GinvLab/MagGravPoly.jl",
+makedocs(repo=Remotes.GitHub("GinvLab","MagGravPoly.jl"),
          sitename="MagGravPoly.jl",
          modules = [MagGravPoly],
          authors = "Alessandro Ghirotto, Andrea Zunino",
