@@ -1,5 +1,5 @@
-name: Package tests
 # Run package tests
+name: Package tests
 
 on: 
   push:
@@ -19,9 +19,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        julia-version: '1' #['lts', '1', 'pre']
-        julia-arch: x64 #[x64, x86]
-        os: ubuntu-latest #[ubuntu-latest, windows-latest, macOS-latest]
+        julia-version: ['1'] #['lts', '1', 'pre']
+        julia-arch: [x64] #[x64, x86]
+        os: [ubuntu-latest] #[ubuntu-latest, windows-latest, macOS-latest]
         exclude:
           - os: macOS-latest
             julia-arch: x86
