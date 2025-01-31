@@ -44,7 +44,7 @@ Generic version containing two different algorithm formulations `forwardtype`, p
 function tgravpolybodies2Dgen(xzobs::Array{<:Real,2},pbodies::GravPolygBodies2D,
                               forwardtype::String)
 
-    @assert body.ylatext==nothing
+    @assert pbodies.ylatext==nothing
 
     # if (fieldnames(typeof(pbodies))==(:geom,:rho))||
     #     (fieldnames(typeof(pbodies))==(:geom,:Jind,:Jrem,:rho))  
@@ -373,7 +373,7 @@ function gravwonbev(x1::Real,z1::Real,x2::Real,z2::Real,ρ::Real)
     r1 = x1^2+z1^2
     r2 = x2^2+z2^2
 
-    lor21 = 0.5*log(r2) - 0.5*log(r1)
+    lor21 = log(r2) - log(r1)
     
     #------------------------
     θ1 = atan(z1,x1) 
