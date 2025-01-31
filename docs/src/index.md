@@ -9,7 +9,7 @@ Depth = 3
 
 ## User Guide
 
-**MagGravPoly** is a Julia package to perform magnetic and gravity anomaly calculations using a 2D or 2.75D parameterization in terms of polygons with uniform arbitrary magnetizations and density contrasts. It provides functions to 1) solve the forward problem, 2) calculate the gradient of a given misfit function and 3) create/manage polygonal structures through the internal sub-package [`GeoPoly`](geopoly.md#geopoly). Such functions can be used to solve inverse problems both in the deterministic and probabilistic approach. In particular, this package provides some functions to solve inverse problems using the Hamiltonian Monte Carlo (HMC) method, as part of the [`GinvLab`](https://github.com/GinvLab) project (see the  [`InverseAlgos.jl`](https://github.com/GinvLab/InverseAlgos.jl) package). Gradients are calculated using the technique of automatic differentiation.
+**MagGravPoly** is a Julia package to perform magnetic and gravity anomaly calculations using a 2D or 2.75D parameterization in terms of polygons with uniform arbitrary magnetizations and density contrasts. It provides functions to 1) solve the forward problem, 2) calculate the gradient of a given misfit function and 3) create/manage polygonal structures through the internal sub-package [`GeoPoly`](geopoly.md#geopoly). Such functions can be used to solve inverse problems both in the deterministic and probabilistic approach. In particular, this package provides some functions to solve inverse problems using the Hamiltonian Monte Carlo (HMC) method, as part of the [`GinvLab`](https://ginvlab.github.io) project (see the  [`InverseAlgos.jl`](https://github.com/GinvLab/InverseAlgos.jl) package). Gradients are calculated using the technique of automatic differentiation.
 With this package it is also possible to perform joint magnetic and gravity forward and gradient calculations and hence solve joint inverse problems, see the tutorials below.
 
 The forward problem formulations for the magnetic case implemented in this package are the following:
@@ -23,7 +23,7 @@ The forward problem formulations for the gravity case implemented in this packag
   
 If you use this code for research or else, please cite the related papers:
 
-* Ghirotto, Zunino, Armadillo &, Mosegaard (2021). **Magnetic Anomalies Caused by 2D Polygonal Structures with Uniform Arbitrary Polarization: new insights from analytical/numerical comparison among available algorithm formulations**. *Geophysical Research Letters, 48*(7), e2020GL091732, https://doi.org/10.1029/2020GL091732.
+* Ghirotto, Zunino, Armadillo, & Mosegaard (2021). **Magnetic Anomalies Caused by 2D Polygonal Structures with Uniform Arbitrary Polarization: new insights from analytical/numerical comparison among available algorithm formulations**. *Geophysical Research Letters, 48*(7), e2020GL091732, https://doi.org/10.1029/2020GL091732.
 
 * Zunino, Ghirotto, Armadillo, & Fichtner (2022). **Hamiltonian Monte Carlo probabilistic joint inversion of 2D (2.75D) gravity and magnetic data**. *Geophysical Research Letters*,  49, e2022GL099789. https://doi.org/10.1029/2022GL099789.
 
