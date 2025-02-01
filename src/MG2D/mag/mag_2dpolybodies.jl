@@ -827,8 +827,6 @@ function tmagwonbev(x1::Real,z1::Real,x2::Real,z2::Real,
 
     lor21 = 0.5*(log(r2)-log(r1))
 
-    @show r1
-
     #------------------------
     θ1 = atan(z1,x1) 
     θ2 = atan(z2,x2)
