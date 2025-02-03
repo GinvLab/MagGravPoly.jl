@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>GeoPoly · MagGravPoly.jl</title><meta name="title" content="GeoPoly · MagGravPoly.jl"/><meta property="og:title" content="GeoPoly · MagGravPoly.jl"/><meta property="twitter:title" content="GeoPoly · MagGravPoly.jl"/><meta name="description" content="Documentation for MagGravPoly.jl."/><meta property="og:description" content="Documentation for MagGravPoly.jl."/><meta property="twitter:description" content="Documentation for MagGravPoly.jl."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">MagGravPoly.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home - MagGravPoly</a></li><li class="is-active"><a class="tocitem" href>GeoPoly</a><ul class="internal"><li><a class="tocitem" href="#User-guide"><span>User guide</span></a></li><li><a class="tocitem" href="#Public-API"><span>Public API</span></a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>GeoPoly</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>GeoPoly</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/GinvLab/MagGravPoly.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/GinvLab/MagGravPoly.jl/blob/main/docs/src/geopoly.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="GeoPoly"><a class="docs-heading-anchor" href="#GeoPoly">GeoPoly</a><a id="GeoPoly-1"></a><a class="docs-heading-anchor-permalink" href="#GeoPoly" title="Permalink"></a></h1><h2 id="User-guide"><a class="docs-heading-anchor" href="#User-guide">User guide</a><a id="User-guide-1"></a><a class="docs-heading-anchor-permalink" href="#User-guide" title="Permalink"></a></h2><p><strong>GeoPoly</strong> <em>is a Julia utility contained in the package</em> <a href="../#maggravpoly"><code>MagGravPoly</code></a> <em>and developed for handling polygonal shapes in the framework of 2D to 2.75D potential-fields forward and inverse modeling</em>. </p><h3 id="Tutorial"><a class="docs-heading-anchor" href="#Tutorial">Tutorial</a><a id="Tutorial-1"></a><a class="docs-heading-anchor-permalink" href="#Tutorial" title="Permalink"></a></h3><h4 id="Check-the-orientation-of-a-polygon"><a class="docs-heading-anchor" href="#Check-the-orientation-of-a-polygon">Check the orientation of a polygon</a><a id="Check-the-orientation-of-a-polygon-1"></a><a class="docs-heading-anchor-permalink" href="#Check-the-orientation-of-a-polygon" title="Permalink"></a></h4><p>First load the module and define a list of vertices of the poligonal bodies  and the relative indices mapping each body to its vertices:</p><pre><code class="language-julia hljs">using MagGravPoly.GeoPoly
+# vertices of the poligonal bodies
+vertices  = [35.0 50.0;
+             65.0 50.0;
+             80.0 35.0;
+             65.0 20.0;
+             35.0 20.0;
+             20.0 35.0]
+
+# indices of vertices for the body
+ind1 = collect(1:6)
+bodyindices = [ind1]
+# construct the poligonal body object
+pbody = PolygBodies2D(bodyindices,vertices)</code></pre><p>and then checks if the polygon is defined in a clockwise or counter-clockwise order: </p><pre><code class="language-julia hljs"># check about the order
+for i=1:pbody.nbo
+aclk = checkanticlockwiseorder(pbody.bo[i])
+@show aclk
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">aclk = true</code></pre><p>In fact plotting the polygon:</p><pre><code class="nohighlight hljs">using PyPlot
+figure()
+for i=1:length(bodyindices)
+x = copy(pbody.bo[i].ver1[:,1])
+y = copy(pbody.bo[i].ver1[:,2])
+append!(x,pbody.bo[i].ver1[1,1])
+append!(y,pbody.bo[i].ver1[1,2])
+p=PyPlot.plot(x,y,&quot;-o&quot;)
+for i=1:length(x)-1
+s=string(i)
+if i&lt;=1
+txtalign = &quot;left&quot;
+else
+txtalign = &quot;right&quot;
+end
+text(x[i],y[i],s=s,horizontalalignment=txtalign,
+fontsize=16,verticalalignment=&quot;top&quot;)
+end
+end
+gca().invert_yaxis()</code></pre><p>is easy to see that is counter-clockwise oriented. <img src="../images/plotex1.svg" alt/></p><h4 id="Check-and-fixing-for-crossing-polygon-sides"><a class="docs-heading-anchor" href="#Check-and-fixing-for-crossing-polygon-sides">Check and fixing for crossing polygon sides</a><a id="Check-and-fixing-for-crossing-polygon-sides-1"></a><a class="docs-heading-anchor-permalink" href="#Check-and-fixing-for-crossing-polygon-sides" title="Permalink"></a></h4><p>First load the module and define a list of vertices of the poligonal bodies  and the relative indices mapping each body to its vertices:</p><pre><code class="language-julia hljs">using MagGravPoly.GeoPoly
+# vertices of the poligonal bodies
+vertices  = [35.0 50.0;
+             80.0 35.0;
+             65.0 50.0;
+             65.0 20.0;
+             35.0 20.0;
+             20.0 35.0]
+
+# indices of vertices for the body
+ind1 = collect(1:6)
+bodyindices = [ind1]
+# construct the poligonal body object
+pbody = PolygBodies2D(bodyindices,vertices)</code></pre><p>Now checks for any crossing polygon side:</p><pre><code class="language-julia hljs">chk = checkpoly(pbody.bo)
+@show chk[1]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">:selfinters</code></pre><p>In fact plotting the polygon:</p><pre><code class="nohighlight hljs">using PyPlot
+figure()
+for i=1:length(bodyindices)
+x = copy(pbody.bo[i].ver1[:,1])
+y = copy(pbody.bo[i].ver1[:,2])
+append!(x,pbody.bo[i].ver1[1,1])
+append!(y,pbody.bo[i].ver1[1,2])
+p=PyPlot.plot(x,y,&quot;-o&quot;)
+for i=1:length(x)-1
+s=string(i)
+if i&lt;=1
+txtalign = &quot;left&quot;
+else
+txtalign = &quot;right&quot;
+end
+text(x[i],y[i],s=s,horizontalalignment=txtalign,
+fontsize=16,verticalalignment=&quot;top&quot;)
+end
+end
+gca().invert_yaxis()</code></pre><p><img src="../images/plotex2.svg" alt/></p><p>We can try to fix the polygonal geometries using the <code>verpolyshift!</code> function:</p><pre><code class="language-julia hljs"># polygon fixing
+GeoPoly.verpolyshift!(pbody.bo)</code></pre><p>and the results will be the following:</p><p><img src="../images/plotex2fix.svg" alt/></p><h2 id="Public-API"><a class="docs-heading-anchor" href="#Public-API">Public API</a><a id="Public-API-1"></a><a class="docs-heading-anchor-permalink" href="#Public-API" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly" href="#MagGravPoly.GeoPoly"><code>MagGravPoly.GeoPoly</code></a> — <span class="docstring-category">Module</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><p>GeoPoly</p><p>A module developed for handling polygonal shapes in the framework of 2D potential field forward and inverse modeling.</p><p><strong>Exports</strong></p><ul><li><a href="#MagGravPoly.GeoPoly.BodySegments2D"><code>BodySegments2D</code></a></li><li><a href="#MagGravPoly.GeoPoly.PolygBodies2D"><code>PolygBodies2D</code></a></li><li><a href="#MagGravPoly.GeoPoly.TopoEdges"><code>TopoEdges</code></a></li><li><a href="#MagGravPoly.GeoPoly.calcareamanypoly"><code>calcareamanypoly</code></a></li><li><a href="#MagGravPoly.GeoPoly.calcareapoly"><code>calcareapoly</code></a></li><li><a href="#MagGravPoly.GeoPoly.checkanticlockwiseorder"><code>checkanticlockwiseorder</code></a></li><li><a href="#MagGravPoly.GeoPoly.checkbodyindices"><code>checkbodyindices</code></a></li><li><a href="#MagGravPoly.GeoPoly.checkpoly"><code>checkpoly</code></a></li><li><a href="#MagGravPoly.GeoPoly.checktopo"><code>checktopo</code></a></li><li><a href="#MagGravPoly.GeoPoly.selfintersectpoly"><code>selfintersectpoly</code></a></li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/GeoPoly.jl#L2-L10">source</a></section></article><h3 id="Data-structures"><a class="docs-heading-anchor" href="#Data-structures">Data structures</a><a id="Data-structures-1"></a><a class="docs-heading-anchor-permalink" href="#Data-structures" title="Permalink"></a></h3><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.BodySegments2D" href="#MagGravPoly.GeoPoly.BodySegments2D"><code>MagGravPoly.GeoPoly.BodySegments2D</code></a> — <span class="docstring-category">Type</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">struct BodySegments2D</code></pre><p>Structure containing the segments of a polygonal body. To create an instance a set of indices have to be passed on.</p><p><strong>Fields</strong></p><ul><li><p><code>ver1::SubArray</code>: (x,y) for first set of vertices (beginning of segments)</p></li><li><p><code>ver2::SubArray</code>: (x,y) for second set of vertices (end of segments)</p></li><li><p><code>nsegm::Integer</code>: total number of segments</p></li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/polydatastruct.jl#L5">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.PolygBodies2D" href="#MagGravPoly.GeoPoly.PolygBodies2D"><code>MagGravPoly.GeoPoly.PolygBodies2D</code></a> — <span class="docstring-category">Type</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">struct PolygBodies2D</code></pre><p>Structure containing a set of polygonal bodies (described by their segments and all vertices). To create an instance, input an array of vectors of indices (of vertices) for each body and the array of all the vertices.</p><p><strong>Fields</strong></p><ul><li><p><code>bo::Vector{MagGravPoly.GeoPoly.BodySegments2D}</code>: array of bodies defined by their vertices</p></li><li><p><code>nbo::Integer</code>: number of polygonal bodies</p></li><li><p><code>allvert::AbstractMatrix{&lt;:Real}</code>: array of all vertices for all bodies</p></li><li><p><code>bodyindices::Vector{&lt;:Vector{&lt;:Integer}}</code>: array indices relating to the vertices in allvert</p></li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/polydatastruct.jl#L42">source</a></section></article><div class="admonition is-warning"><header class="admonition-header">Warning</header><div class="admonition-body"><p>Vertices of the polygonal bodies must be provided  counterclockwise to the structure <code>BodySegments2D</code> to perform gravity &amp; magnetic anomaly calculations using the functions in the packages <code>MagGravPoly</code>. To assess this use the function <code>checkanticlockwiseorder</code>.</p></div></div><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.TopoEdges" href="#MagGravPoly.GeoPoly.TopoEdges"><code>MagGravPoly.GeoPoly.TopoEdges</code></a> — <span class="docstring-category">Type</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><p>Julia structure defining a topography as set of segments characterized by x and z coordinates and both angular coefficient and intercept.  </p><p><strong>Fields</strong></p><ul><li><p><code>verx::Vector{Vector{Float64}}</code>: all x couples of topography coordinates</p></li><li><p><code>verz::Vector{Vector{Float64}}</code>: all z couples of topography coordinates</p></li><li><p><code>mq::Vector{Vector{Float64}}</code>: angular coefficients and segment intersepts of each coordinates couple</p></li><li><p><code>xz::Matrix{Float64}</code>: 2D array of (x,z) coordinates for topography</p></li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/polydatastruct.jl#L118">source</a></section></article><h3 id="Checking-geometries-functions"><a class="docs-heading-anchor" href="#Checking-geometries-functions">Checking-geometries functions</a><a id="Checking-geometries-functions-1"></a><a class="docs-heading-anchor-permalink" href="#Checking-geometries-functions" title="Permalink"></a></h3><h4 id="Single-polygonal-body"><a class="docs-heading-anchor" href="#Single-polygonal-body">Single polygonal body</a><a id="Single-polygonal-body-1"></a><a class="docs-heading-anchor-permalink" href="#Single-polygonal-body" title="Permalink"></a></h4><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.intersectpairpoly" href="#MagGravPoly.GeoPoly.intersectpairpoly"><code>MagGravPoly.GeoPoly.intersectpairpoly</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">intersectpairpoly(
+    bo::Vector{MagGravPoly.GeoPoly.BodySegments2D}
+) -&gt; Bool
+</code></pre><p>Function to check if there are intersections beetween sides of a polygon in respect to neighbour polygons, returning a Boolean value (i.e. true or false).</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/polygtests.jl#L392">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.selfintersectpoly" href="#MagGravPoly.GeoPoly.selfintersectpoly"><code>MagGravPoly.GeoPoly.selfintersectpoly</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">selfintersectpoly(
+    bo::MagGravPoly.GeoPoly.BodySegments2D
+) -&gt; Bool
+</code></pre><p>Check if there is any self-intersection for a single polygon, returning a Boolean value (i.e. true or false).</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/polygtests.jl#L131">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.checkall" href="#MagGravPoly.GeoPoly.checkall"><code>MagGravPoly.GeoPoly.checkall</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">checkall(
+    bos::Vector{MagGravPoly.GeoPoly.BodySegments2D},
+    topo::MagGravPoly.GeoPoly.TopoEdges
+) -&gt; Vector{Symbol}
+</code></pre><p>Check if there is any self-intersection considering all polygons beyond to topography crossing, returning three string values.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/polygtests.jl#L80">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.checkanticlockwiseorder" href="#MagGravPoly.GeoPoly.checkanticlockwiseorder"><code>MagGravPoly.GeoPoly.checkanticlockwiseorder</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">checkanticlockwiseorder(
+    body::MagGravPoly.GeoPoly.BodySegments2D
+) -&gt; Bool
+</code></pre><p>Check whether the polygonal body has segments ordered anticlockwise.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/checkutils.jl#L2">source</a></section></article><h4 id="Multiple-polygonal-bodies"><a class="docs-heading-anchor" href="#Multiple-polygonal-bodies">Multiple polygonal bodies</a><a id="Multiple-polygonal-bodies-1"></a><a class="docs-heading-anchor-permalink" href="#Multiple-polygonal-bodies" title="Permalink"></a></h4><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.checktopo" href="#MagGravPoly.GeoPoly.checktopo"><code>MagGravPoly.GeoPoly.checktopo</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">checktopo(
+    topo::MagGravPoly.GeoPoly.TopoEdges,
+    bo::Vector{MagGravPoly.GeoPoly.BodySegments2D}
+) -&gt; Bool
+</code></pre><p>Function to check if there is some polygon crossing the topography, returning a Boolean value (i.e. true or false).  </p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/topogtests.jl#L3">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.checkpoly" href="#MagGravPoly.GeoPoly.checkpoly"><code>MagGravPoly.GeoPoly.checkpoly</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">checkpoly(
+    bos::Vector{MagGravPoly.GeoPoly.BodySegments2D}
+) -&gt; Tuple{Symbol, Symbol}
+</code></pre><p>Check if there is any self-intersection considering all polygons, returning two string values.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/polygtests.jl#L100">source</a></section></article><h4 id="Fixing-geometries-functions"><a class="docs-heading-anchor" href="#Fixing-geometries-functions">Fixing-geometries functions</a><a id="Fixing-geometries-functions-1"></a><a class="docs-heading-anchor-permalink" href="#Fixing-geometries-functions" title="Permalink"></a></h4><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.verpolyshift!" href="#MagGravPoly.GeoPoly.verpolyshift!"><code>MagGravPoly.GeoPoly.verpolyshift!</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">verpolyshift!(
+    borg::Vector{MagGravPoly.GeoPoly.BodySegments2D}
+)
+verpolyshift!(
+    borg::Vector{MagGravPoly.GeoPoly.BodySegments2D},
+    blow::Union{Nothing, Vector{MagGravPoly.GeoPoly.BodySegments2D}}
+)
+verpolyshift!(
+    borg::Vector{MagGravPoly.GeoPoly.BodySegments2D},
+    blow::Union{Nothing, Vector{MagGravPoly.GeoPoly.BodySegments2D}},
+    bup::Union{Nothing, Vector{MagGravPoly.GeoPoly.BodySegments2D}}
+)
+</code></pre><p>Function to check if there is intersection beetween sides of a polygon, trying to shift polygon vertices in order to avoid intersection. This algorithm shifts the polygon vertices in agreement with the mathematical properties of the Hamiltonian Dynamics.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/polygtests.jl#L167">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.verpolyallshift!" href="#MagGravPoly.GeoPoly.verpolyallshift!"><code>MagGravPoly.GeoPoly.verpolyallshift!</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">verpolyallshift!(
+    borg::Vector{MagGravPoly.GeoPoly.BodySegments2D}
+)
+verpolyallshift!(
+    borg::Vector{MagGravPoly.GeoPoly.BodySegments2D},
+    blow::Union{Nothing, Vector{MagGravPoly.GeoPoly.BodySegments2D}}
+)
+verpolyallshift!(
+    borg::Vector{MagGravPoly.GeoPoly.BodySegments2D},
+    blow::Union{Nothing, Vector{MagGravPoly.GeoPoly.BodySegments2D}},
+    bup::Union{Nothing, Vector{MagGravPoly.GeoPoly.BodySegments2D}}
+)
+</code></pre><p>Function to check if there are intersections beetween sides of a polygon in respect to neighbour polygons, trying to shift polygon vertices in order to avoid intersection. This algorithm shifts the polygon vertices in agreement with the mathematical properties of the Hamiltonian Dynamics.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/polygtests.jl#L456">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.vertoposhift!" href="#MagGravPoly.GeoPoly.vertoposhift!"><code>MagGravPoly.GeoPoly.vertoposhift!</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">vertoposhift!(
+    topo::MagGravPoly.GeoPoly.TopoEdges,
+    bo::Vector{MagGravPoly.GeoPoly.BodySegments2D}
+)
+vertoposhift!(
+    topo::MagGravPoly.GeoPoly.TopoEdges,
+    bo::Vector{MagGravPoly.GeoPoly.BodySegments2D},
+    blow::Union{Nothing, Vector{MagGravPoly.GeoPoly.BodySegments2D}}
+)
+vertoposhift!(
+    topo::MagGravPoly.GeoPoly.TopoEdges,
+    bo::Vector{MagGravPoly.GeoPoly.BodySegments2D},
+    blow::Union{Nothing, Vector{MagGravPoly.GeoPoly.BodySegments2D}},
+    bup::Union{Nothing, Vector{MagGravPoly.GeoPoly.BodySegments2D}}
+)
+</code></pre><p>Function to check if there is some polygon crossing the topography, shifting the polygon vertices in order to avoid intersection. This algorithm shifts the polygon vertices in agreement with the mathematical properties of the Hamiltonian Dynamics.  </p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/topogtests.jl#L68">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.fixall!" href="#MagGravPoly.GeoPoly.fixall!"><code>MagGravPoly.GeoPoly.fixall!</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">fixall!(
+    topo::MagGravPoly.GeoPoly.TopoEdges,
+    qbo::Vector{MagGravPoly.GeoPoly.BodySegments2D},
+    inters::Vector{Symbol}
+)
+fixall!(
+    topo::MagGravPoly.GeoPoly.TopoEdges,
+    qbo::Vector{MagGravPoly.GeoPoly.BodySegments2D},
+    inters::Vector{Symbol},
+    indices::Union{Nothing, Vector{Vector{&lt;:Integer}}}
+)
+fixall!(
+    topo::MagGravPoly.GeoPoly.TopoEdges,
+    qbo::Vector{MagGravPoly.GeoPoly.BodySegments2D},
+    inters::Vector{Symbol},
+    indices::Union{Nothing, Vector{Vector{&lt;:Integer}}},
+    lowcon::Union{Nothing, Vector{Float64}}
+)
+fixall!(
+    topo::MagGravPoly.GeoPoly.TopoEdges,
+    qbo::Vector{MagGravPoly.GeoPoly.BodySegments2D},
+    inters::Vector{Symbol},
+    indices::Union{Nothing, Vector{Vector{&lt;:Integer}}},
+    lowcon::Union{Nothing, Vector{Float64}},
+    upcon::Union{Nothing, Vector{Float64}}
+)
+</code></pre><p>Function fixing polygons vertices in order to avoid intersection and topography crossing, changing sign to the corresponding elements in the momentum array. This algorithm is in agreement with the mathematical properties of the Hamiltonian Dynamics.  </p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/polygtests.jl#L4">source</a></section></article><h3 id="Useful-functions"><a class="docs-heading-anchor" href="#Useful-functions">Useful functions</a><a id="Useful-functions-1"></a><a class="docs-heading-anchor-permalink" href="#Useful-functions" title="Permalink"></a></h3><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.checkbodyindices" href="#MagGravPoly.GeoPoly.checkbodyindices"><code>MagGravPoly.GeoPoly.checkbodyindices</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">checkbodyindices(
+    bodyindicesorg::Vector{&lt;:Vector{&lt;:Integer}},
+    verticesorg::AbstractMatrix{&lt;:Real}
+) -&gt; Tuple{Vector{&lt;:Vector{&lt;:Integer}}, Any}
+</code></pre><p>Function to check all polygons&#39; vertices and bodyindices in order to make sure that vertices in   common among polygons appear only once.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/checkutils.jl#L58">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.Inter2Segm" href="#MagGravPoly.GeoPoly.Inter2Segm"><code>MagGravPoly.GeoPoly.Inter2Segm</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">Inter2Segm(
+    P1x::Float64,
+    P1z::Float64,
+    P2x::Float64,
+    P2z::Float64,
+    P3x::Float64,
+    P3z::Float64,
+    P4x::Float64,
+    P4z::Float64
+) -&gt; Union{Nothing, Matrix{Float64}}
+</code></pre><p>Function to check if there is intersection beetween two segments, defined by their vertices. The output returns the (x,z) coordinates of the point in the case of intersection.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/interseg.jl#L2">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.isInternal" href="#MagGravPoly.GeoPoly.isInternal"><code>MagGravPoly.GeoPoly.isInternal</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">isInternal(
+    bo::MagGravPoly.GeoPoly.BodySegments2D,
+    px::Float64,
+    pz::Float64
+) -&gt; Bool
+</code></pre><p>Function to check if a point is internal to a polygon.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/interseg.jl#L53">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.checkmodelizdim" href="#MagGravPoly.GeoPoly.checkmodelizdim"><code>MagGravPoly.GeoPoly.checkmodelizdim</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">checkmodelizdim(
+    topo::MagGravPoly.GeoPoly.TopoEdges,
+    bo::Vector{MagGravPoly.GeoPoly.BodySegments2D},
+    perc::Real
+)
+</code></pre><p>Function to check if the topography extends both righward and leftward beyond the outermost polygons by a user-defined percentage (&gt; 25%).  </p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/topogtests.jl#L116">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.calcareapoly" href="#MagGravPoly.GeoPoly.calcareapoly"><code>MagGravPoly.GeoPoly.calcareapoly</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">Calculate the area of a single polygon given a `BodySegments2D` structure.
+Returns the value of the area.</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/utils.jl#L21-L24">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="MagGravPoly.GeoPoly.calcareamanypoly" href="#MagGravPoly.GeoPoly.calcareamanypoly"><code>MagGravPoly.GeoPoly.calcareamanypoly</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">Calculate area of a set of polygons given a `PolygBodies2D` structure.
+Returns a vector where each element is the area of one of the polygons.</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/GinvLab/MagGravPoly.jl/blob/ba4dc99821be29f22b2436d62d52b58773d8a710/src/GeoPoly/utils.jl#L3-L6">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home - MagGravPoly</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.0 on <span class="colophon-date" title="Monday 3 February 2025 13:07">Monday 3 February 2025</span>. Using Julia version 1.11.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
