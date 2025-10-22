@@ -148,7 +148,7 @@ end
 #########################################################
     
 
-function MakieLayout.process_interaction(state::InteractionState, event::Union{MouseEvent,KeysEvent}, ax1)
+function process_interaction(state::InteractionState, event::Union{MouseEvent,KeysEvent}, ax1)
     
 
     markersize = 30
@@ -262,7 +262,7 @@ function drawpolygons()
     
     ###################
     ##  Init
-    fig = Figure(resolution = (1000, 700))
+    fig = Figure(size = (1000, 700))
     ax1 = Axis(fig[1,1])
 
     xlims!(1,100); ylims!(1,100)
@@ -271,7 +271,7 @@ function drawpolygons()
 
     ########################################
     ## Interactions
-    clicks = Node(Array{Float64,2}(undef,0,2))
+    clicks = Observable(Array{Float64,2}(undef,0,2))
    
     ## LIFT function splitobs!
     points1 = lift(splitobs1!,clicks)

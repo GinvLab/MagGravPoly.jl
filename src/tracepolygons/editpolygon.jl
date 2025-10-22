@@ -11,22 +11,22 @@ end
 
 function drawpoly( ; markersize=20.0)
     
-    points = Node(Point2f[(-2,-2), (2,-2), (2,2),])
+    points = Observable(Point2f[(-2,-2), (2,-2), (2,2),]) #Node
 
     # initialize struct to hold variable states
     state = InteractionState(points)
 
 
     # create the figure
-    fig = Figure(resolution = (1000, 900))
+    fig = Figure(size = (1000, 900))
     ax1 = Axis(fig[1,1])
 
     # plot the initial polygon
-    poly!(ax1,state.points, strokewidth=2, strokecolor=:black, color=:skyblue2)
+    poly!(ax1,state.points, strokewidth=2, strokecolor=:black, color=:skyblue2) 
           #scale_plot = false)
     # plot vertices as a scatter plot
     scatplt = scatter!(ax1,state.points, color=:white, strokewidth=3, markersize=markersize,
-             strokecolor=:black, raw=true)
+             strokecolor=:black)  #, raw=true)
 
     # resize figure to polygon
     #autolimits!(ax1)
@@ -34,12 +34,12 @@ function drawpoly( ; markersize=20.0)
 
     # remove the click and drag zoom action
     deregister_interaction!(ax1, :rectanglezoom)
-
+    
     # # add_move!(scene, points, pplot)
     add_remove_move_points!(ax1, points)
 
-    mouseevents = addmouseevents!(ax1.scene,scatplt)
-    move_points!(ax1,points,scatplt,mouseevents)
+    #mouseevents = addmouseevents!(ax1.scene,scatplt)
+    #move_points!(ax1,points,scatplt,mouseevents)
 
     #move_points!(ax1,points)
     # center!(fig.scene)
@@ -142,7 +142,7 @@ function addpoint2nearestedge!(ax,points)
         println("Point has the same distance to two (or more) edges, cannot determine \n to which edge should add it. Please select another point.")
         #@show dist
     elseif counter==0
-        error("addpoint2nearestedge(): Something went wrong, no shortest distance found.")
+        error("addpoint2nearesteadge(): Something went wrong, no shortest distance found.")
     else
         # index of the closest edge
         points[] = insert!(points[],idx+1,pos)
@@ -155,7 +155,7 @@ end
 function removepoint!(ax,points)
 
     # get which plot and id the mouse is over
-    plot, idx = mouse_selection(ax.scene)
+    plot, idx = pick(ax.scene)
 
     ##########################################
     ##   Check the following!!!             ##   
@@ -178,85 +178,100 @@ function removepoint!(ax,points)
     return
 end
 
+
 #######################################################
+#=
+ function movepoint!(ax,points)
 
-# function movepoint!(ax,points)
+     # get which plot and id the mouse is over
+     plot, idx = pick(ax.scene)
 
-#     # get which plot and id the mouse is over
-#     plot, idx = mouse_selection(ax.scene)
+     ##########################################
+     ##   Check the following!!!             ##   
+     ##########################################
+     # take action only if the plot is of type Scatter
+     targetplot = Scatter{Tuple{Vector{Point{2, Float32}}}}  #<<<<<--------<<<<<<
 
-#     ##########################################
-#     ##   Check the following!!!             ##   
-#     ##########################################
-#     # take action only if the plot is of type Scatter
-#     targetplot = Scatter{Tuple{Vector{Point{2, Float32}}}}  #<<<<<--------<<<<<<
+     if typeof(plot) == targetplot && checkbounds(Bool, points[], idx)
+         pos = mouseposition(ax.scene)
+         points[][idx] = Point2f(pos)
+     end
+     points[] = points[]
 
-#     if typeof(plot) == targetplot && checkbounds(Bool, points[], idx)
-#         pos = mouseposition(ax.scene)
-#         points[][idx] = Point2f(pos)
-#     end
-#     points[] = points[]
-
-#     return
-# end
+     return
+ end
+=#
 
 ##########################################################
 
 """
+Add, remove or move points in a polygon interactively.
 
-Add or remove points from the polygon.
+Controls:
+- [A] + Left Click: Add point near closest edge
+- [D] + Left Click: Remove point
+- [S] + Left Click and Drag: Move point
 """
 function add_remove_move_points!(ax, points)
 
-    on(events(ax.scene).mousebutton) do moueve
+    global idx
+    idx = 0  # initialize selected index for dragging
+    scene = ax.scene
 
-        # println()
-        # @show moueve
-        # @show moueve.button
-        # @show moueve.action
-        # @show ax.scene.events.mouseposition[]
-        # @show to_world(ax.scene, Point2f(ax.scene.events.mouseposition[]))
-        # @show mouseposition(ax.scene)
+    # Mouse press handler
+    on(events(scene).mousebutton) do mouse_event
+        if mouse_event.button == Mouse.left
+            pos = mouseposition(scene)
 
-        # keystate is a Set
-        # keystate = events(ax.scene).keyboardstate
+            if mouse_event.action == Mouse.press
+                if ispressed(scene, Keyboard.a)
+                    # Add a new vertex to polygon
+                    addpoint2nearestedge!(ax, points)
 
-        # if Keyboard.a in keystate 
-        #     println("key a pressed")
-        #     @show ispressed(fig.scene,Keyboard.a)
-        # end
+                elseif ispressed(scene, Keyboard.d)
+                    # Remove points from polygon
+                    removepoint!(ax, points)
 
-        if moueve.button==Mouse.left 
+                elseif ispressed(scene, Keyboard.s)
+                    # Select point for dragging
+                    plot, i = pick(scene)
+                    if plot isa Scatter && checkbounds(Bool, points[], i)
+                        idx = i
+                    else
+                        idx = 0  # No point selected
+                    end
+                end
 
-            if ispressed(ax.scene,Keyboard.a)
-                # add a new vertex to polygon
-                addpoint2nearestedge!(ax,points)
-
-            elseif ispressed(ax.scene,Keyboard.d)
-                # remove points from polygon
-                removepoint!(ax,points)
-
-            elseif ispressed(ax.scene,Keyboard.s) 
-
-                println("move point is pressed s")
-
-                ## relocate already existing vertices
-                #movepoint!(ax,points)
-
+            elseif mouse_event.action == Mouse.release
+                # Release point after dragging
+                idx = 0
+                notify(points)
             end
         end
-
-        # do not consume the event
         return Consume(false)
     end
+
+    # Mouse motion handler (for dragging)
+    on(events(scene).mouseposition) do _
+        if idx > 0 && ispressed(scene, Keyboard.s)
+            pos = mouseposition(scene)
+            points[][idx] = Point2f(pos)
+            notify(points)
+        end
+    end
+
+    return nothing
 end
 
-#######################################################
 
+
+#######################################################
+#=
 """
 
 Move vertices of polygon.
 """
+
 function move_points!(ax, points, scatplt, mouseevents)
 
     # idx must be passed somewhat from "onmouseleftdragstart" to "onmouseleftdrag"
@@ -265,7 +280,7 @@ function move_points!(ax, points, scatplt, mouseevents)
     # left drag starts
     onmouseleftdragstart(mouseevents) do event
         # get which plot and id the mouse is over
-        plot, idx = mouse_selection(ax.scene)
+        plot, idx = pick(ax.scene) #mouse_selection
 
         ##########################################
         ##   Check the following!!!             ##   
@@ -283,13 +298,13 @@ function move_points!(ax, points, scatplt, mouseevents)
     # left drag continues
     onmouseleftdrag(mouseevents) do event
         pos = mouseposition(ax.scene)
-        points[][idx] = Point2f(pos)
+        points[][idx] = Point2f(pos) 
         points[] = points[]
     end
 
     return
 end
-
+=#
 
 
 
@@ -302,6 +317,7 @@ end
 #     end
 #     return
 # end
+
 
 
 #########################################################
