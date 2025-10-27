@@ -1,7 +1,7 @@
 name = "MagGravPoly"
 uuid = "5ad9ae14-893c-4be5-bc0a-7005514a6e19"
 authors = ["Alessandro Ghirotto", "Andrea Zunino"]
-version = "0.10.4"
+version = "0.10.5"
 
 [deps]
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
