@@ -151,10 +151,12 @@ function printmagmodparinfo(mstart,bodyindices,mag_whichpar,mlow,mup)
     
     println(" ---------------------------------------------------")
     printstyled(" Lower constraints for model parameters:\n",bold=true,color=:light_cyan)
-    pretty_table(vecparl, noheader = true, crop = :horizontal, formatters = ft_round(3))
+    pretty_table(vecparl, formatters = [fmt__round(3)])
+    #pretty_table(vecparl, noheader = true, crop = :horizontal, formatters = ft_round(3))
 
     printstyled(" Upper constraints for model parameters:\n",bold=true,color=:light_cyan)
-    pretty_table(vecparu, noheader = true, crop = :horizontal, formatters = ft_round(3))  
+    pretty_table(vecparu, formatters = [fmt__round(3)])
+    #pretty_table(vecparu, noheader = true, crop = :horizontal, formatters = ft_round(3))  
     
     return nothing
 end
