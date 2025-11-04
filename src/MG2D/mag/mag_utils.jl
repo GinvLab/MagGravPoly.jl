@@ -79,22 +79,43 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Compute the DC-Shift of Total-field Magnetic intensity Anomaly (TMA) data. There are two possibilities for `type`:
+Compute the DC-Shift of Total-field Magnetic intensity Anomaly (TMI) data. There are three possibilities for `type`:
 - :auto
+- :absolute
 - :ref_obs
-See the MagGrav2Dpoly manual for details and explanations.
+See the MagGravPoly manual for details and explanations.
 """
-function mag_dcshift!(tmagobs::Vector{<:Real},type::Symbol;id::Union{Nothing,<:Integer}=nothing)
+function mag_dcshift!(tmagobs::Vector{<:Real},tmagcalc::Vector{<:Real},
+                      type::Symbol;id::Union{Nothing,<:Real}=nothing)
 
+    @assert length(tmagobs) == length(tmagcalc)
+    
     if type == :auto
         @assert id == nothing
-        tmagobs.-=mean(tmagobs)
+        #RMSD
+        rmsd = sqrt(sum((tmagobs .- tmagcalc).^2)/length(tmagobs))
+        dig = string(tmagobs[1]-floor(tmagobs[1],digits=0))
+        digl = length(dig)-2
+        rmsd = round(rmsd,digits=digl)
+        val1 = mean(tmagobs)
+        val2 = mean(tmagcalc)
+        if val1 <= val2
+            tmagcalc.-=rmsd
+        else
+            tmagcalc.+=rmsd
+        end
+    elseif type == :absolute
+        @assert id != nothing
+        tmagcalc.+= id
     elseif type == :ref_obs
         @assert typeof(id) <: Integer
         @assert id > 0 && id <= length(tmagobs)
-        tmagobs.-=tmagobs[id]     
+        val1 = tmagobs[id]
+        val2 = tmagcalc[id]
+        diff = val1-val2
+        tmagcalc.+=diff
     else
-        error("The only possibilities for `type` are :auto and :ref_obs. Aborting")     
+        error("The only possibilities for `type` are :auto, :absolute and :ref_obs. Aborting")     
     end
     
     return

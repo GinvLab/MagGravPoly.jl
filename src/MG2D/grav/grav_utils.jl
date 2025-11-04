@@ -3,22 +3,43 @@
 """
 $(TYPEDSIGNATURES)
 
-Compute the DC-Shift of gravity data. There are two possibilities for `type`:
+Compute the DC-Shift of gravity data. There are three possibilities for `type`:
 - :auto
+- :absolute
 - :ref_obs
-See the MagGrav2Dpoly manual for details and explanations.
+See the MagGravPoly manual for details and explanations.
 """
-function grav_dcshift!(tgravobs::Vector{<:Real},type::Symbol;id::Union{Nothing,<:Integer}=nothing)
+function grav_dcshift!(tgravobs::Vector{<:Real},tgravcalc::Vector{<:Real},
+                       type::Symbol;id::Union{Nothing,<:Real}=nothing)
 
+    @assert length(tgravobs) == length(tgravcalc)
+    
     if type == :auto
         @assert id == nothing
-        tgravobs.-=mean(tgravobs)
+        #RMSD
+        rmsd = sqrt(sum((tgravobs .- tgravcalc).^2)/length(tgravobs))
+        dig = string(tgravobs[1]-floor(tgravobs[1],digits=0))
+        digl = length(dig)-2
+        rmsd = round(rmsd,digits=digl)
+        val1 = mean(tgravobs)
+        val2 = mean(tgravcalc)
+        if val1 <= val2
+            tgravcalc.-=rmsd
+        else
+            tgravcalc.+=rmsd
+        end
+    elseif type == :absolute
+        @assert id != nothing
+        tgravcalc.+= id
     elseif type == :ref_obs
         @assert typeof(id) <: Integer
         @assert id > 0 && id <= length(tgravobs)
-        tgravobs.-=tgravobs[id]     
+        val1 = tgravobs[id]
+        val2 = tgravcalc[id]
+        diff = val1-val2
+        tgravcalc.+=diff  
     else
-        error("The only possibilities for `type` are :auto and :ref_obs. Aborting")     
+        error("The only possibilities for `type` are :auto, :absolute and :ref_obs. Aborting")     
     end
     
     return

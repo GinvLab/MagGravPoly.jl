@@ -15,6 +15,7 @@ using ForwardDiff
 using ReverseDiff
 using DocStringExtensions
 using PrettyTables
+using Statistics
 
 
 #####################################
