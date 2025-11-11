@@ -49,7 +49,7 @@ struct Grav2DpolyProb
     function Grav2DpolyProb(; pbodystart::GravPolygBodies2D,topography::TopoEdges,
                             grav_xzobs::Array{<:Real,2},grav_obsdata::Vector{<:Real},
                             grav_invCd::AbstractMatrix{<:Real},grav_whichpar::Symbol,grav_ADkind::String,
-                            trytofixpolygons::Bool=false )
+                            trytofixpolygons::Bool=false,typemisf::Symbol=:normal )
 
         # Create  Grav2DPolyMisf
         if grav_whichpar==:all
@@ -80,7 +80,7 @@ struct Grav2DpolyProb
 
         # Instantiate the misfit type
         gravmisf = Grav2DPolyMisf(pbodystart.geom.bodyindices,grav_xzobs,grav_obsdata,grav_invCd,
-                                  grav_whichpar,allvert=grav_allvert,rho=rho,ylatext=ylatext)
+                                  grav_whichpar,allvert=grav_allvert,rho=rho,ylatext=ylatext,typemisf=typemisf)
 
         ##----------------------------------
         firsttime_grad = Ref(true) 

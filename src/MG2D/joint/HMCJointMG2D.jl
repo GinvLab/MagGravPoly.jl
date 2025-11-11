@@ -53,7 +53,7 @@ struct Joint2DpolyProb
                              mag_invCd::AbstractMatrix{<:Real},mag_whichpar::Symbol,mag_ADkind::String,
                              grav_xzobs::Array{<:Real,2},grav_obsdata::Vector{<:Real},
                              grav_invCd::AbstractMatrix{<:Real},grav_whichpar::Symbol,grav_ADkind::String,
-                             trytofixpolygons::Bool=false )
+                             trytofixpolygons::Bool=false,typemisfmag::Symbol=:normal,typemisfgrav::Symbol=:normal  )
 
 
 
@@ -89,7 +89,7 @@ struct Joint2DpolyProb
         # Instantiate the misfit type
         magmisf = Mag2DPolyMisf(jpbodystart.geom.bodyindices,northxax,mag_xzobs,mag_obsdata,mag_invCd,mag_whichpar,
                                 allvert=mag_allvert,Jind=Jind,Jrem=Jrem,
-                                ylatext=jpbodystart.ylatext)
+                                ylatext=jpbodystart.ylatext,typemisf=typemisfmag)
 
         # Create  Grav2DPolyMisf
         if grav_whichpar==:all
@@ -106,7 +106,7 @@ struct Joint2DpolyProb
         # Instantiate the misfit type
         gravmisf = Grav2DPolyMisf(jpbodystart.geom.bodyindices,grav_xzobs,grav_obsdata,grav_invCd,
                                   grav_whichpar,allvert=grav_allvert,rho=rho,
-                                  ylatext=jpbodystart.ylatext)
+                                  ylatext=jpbodystart.ylatext,typemisf=typemisfgrav)
 
         ##
         firsttime_grad = Ref(true)
