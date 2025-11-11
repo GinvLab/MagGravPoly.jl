@@ -443,8 +443,8 @@ function calc∇misfmag(magmisf::Mag2DPolyMisf,modpar::AbstractArray, # ,whichpa
 
     end
 
-    # Adding contribution from DC-shift
     #=
+    # Adding contribution from DC-shift
     if magmisf.typemisf==:dcshift
         grad .+= magANdcshift(magmisf,modpar)
     end

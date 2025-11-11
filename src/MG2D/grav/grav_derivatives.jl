@@ -368,11 +368,13 @@ function calc∇misfgrav(gravmisf::Grav2DPolyMisf,modpar::AbstractArray,#whichpa
 
     end
 
+    #=
     # Adding contribution from DC-shift
     if gravmisf.typemisf==:dcshift
         grad .+= gravANdcshift(gravmisf,modpar)
     end
-
+    =#
+    
     nangrad = isnan.(grad)
     if any(nangrad)
         error("calc∇misfgrav(): gravmisf error, isnan.(grad) = $nangrad")
