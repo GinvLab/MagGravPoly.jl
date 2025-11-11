@@ -18,9 +18,9 @@ function grav_dcshift!(tgravobs::Vector{<:Real},tgravcalc::Vector{<:Real},
         @assert id == nothing
         #RMSD
         rmsd = sqrt(sum((tgravobs .- tgravcalc).^2)/length(tgravobs))
-        dig = string(tgravobs[1]-floor(tgravobs[1],digits=0))
-        digl = length(dig)-2
-        rmsd = round(rmsd,digits=digl)
+        #dig = string(tgravobs[1]-floor(tgravobs[1],digits=0))
+        #digl = length(dig)-2
+        #rmsd = round(rmsd,digits=digl)
         val1 = mean(tgravobs)
         val2 = mean(tgravcalc)
         if val1 <= val2
@@ -107,7 +107,7 @@ end
 #-----------------------------------
 
 ###############################################################################
-
+#=
 """
 Function to create a customized Mass Matrix
 """
@@ -260,5 +260,141 @@ function calcMgrav(indices::Vector{<:Vector{<:Integer}},modpar::Vector{<:Float64
     
     return M
 end
-
+=#
 ###############################################################################
+
+"""
+$(TYPEDSIGNATURES)
+
+Function to create a customized mass matrix for gravity problems.
+
+Constructs a covariance/mass matrix `M` with:
+- vertex coordinate covariances (x, z);
+- optional body-level density variances.
+
+# Arguments
+- `indices`       :: Vector of vertex index lists per body
+- `modpar`        :: Vector of model parameters [x₁..xₙ, z₁..zₙ, (phys params...)]
+- `sigma`         :: Vector of per-body standard deviations
+- `whichpargrav`  :: Symbol — `:vertices`, `:all`, or `:density`
+- `corrlength`    :: Vector of per-body correlation lengths (or `nothing`)
+
+# Returns
+A symmetric matrix `M` of size `(nx, nx)` representing the mass/covariance matrix.
+"""
+function calcMgrav(indices::Vector{<:Vector{<:Integer}},
+                   modpar::Vector{<:Float64},
+                   sigma::Vector{<:Vector{<:Float64}},
+                   whichpargrav::Symbol;
+                   corrlength::Union{Vector{<:Vector{<:Float64}},Nothing}=nothing)
+
+    # -------------------------------
+    # Internal helper: Gaussian correlation
+    # -------------------------------
+    cgaussian(dist, corrlength) =
+        maximum(dist) == 0.0 ? ones(size(dist)) : exp.(-(dist ./ corrlength) .^ 2)
+
+    # -------------------------------
+    # Step 1: Initialize quantities
+    # -------------------------------
+    nbo = length(indices)
+    nx  = length(modpar)
+    M   = zeros(nx, nx)
+
+    # Unique vertices (compact indexing)
+    all_idx = collect(Iterators.flatten(indices))
+    unique_list = unique(all_idx)
+    indbo = length(unique_list)
+    ncoo  = indbo * 2
+
+    if nx < ncoo
+        error("calcMgrav(): modpar too short to contain vertex coordinates.")
+    end
+
+    xcoords = modpar[1:indbo]
+    zcoords = modpar[indbo+1:2*indbo]
+    pos_of_old = Dict(old => i for (i, old) in enumerate(unique_list))
+
+    # -------------------------------
+    # Step 2: Case A — Vertex covariance (vertices or all)
+    # -------------------------------
+    if whichpargrav in (:vertices, :all)
+        @assert corrlength !== nothing "calcMgrav(): corrlength required for :vertices or :all"
+        @assert length(corrlength) == nbo "calcMgrav(): corrlength must have one entry per body"
+
+        # Check sigma/corrlength shapes
+        for i in 1:nbo
+            @assert length(corrlength[i]) >= 2 "corrlength[$i] must have [x,z]"
+            @assert length(sigma[i]) >= 2 "sigma[$i] must have [σx, σz]"
+        end
+
+        # Compact vertex indices per body
+        body_pos = [ [pos_of_old[v] for v in inds] for inds in indices ]
+
+        # -------------------------------
+        # Step 3: Build covariance submatrices
+        # -------------------------------
+        for i in 1:nbo
+            poslist = body_pos[i]
+            ni = length(poslist)
+            if ni == 0; continue; end
+
+            xi, zi = xcoords[poslist], zcoords[poslist]
+            Xi, Zi = reshape(xi, (ni,1)), reshape(zi, (ni,1))
+            distmat = sqrt.((Xi .- Xi').^2 .+ (Zi .- Zi').^2)
+
+            ind_x = poslist
+            ind_z = poslist .+ indbo
+
+            σx, σz = sigma[i][1], sigma[i][2]
+            clx, clz = corrlength[i][1], corrlength[i][end]
+
+            M[ind_x, ind_x] .= σx^2 .* cgaussian(distmat, clx)
+            M[ind_z, ind_z] .= σz^2 .* cgaussian(distmat, clz)
+        end
+
+        # -------------------------------
+        # Step 4: Add body-level density variance if whichpargrav == :all
+        # -------------------------------
+        nbphys_total = nx - ncoo
+        if whichpargrav == :all
+            nbphys_per_body = nbphys_total ÷ nbo
+            @assert nbphys_per_body == 1 "calcMgrav(): expected 1 density param per body for :all"
+            @assert length(sigma) >= 2*nbo "calcMgrav(): sigma must include vertex + density entries"
+
+            for i in 1:nbo
+                pos = 2*indbo + i
+                M[pos, pos] = sigma[nbo + i][end]^2
+            end
+        end
+
+    # -------------------------------
+    # Step 5: Case B — Density-only parameters
+    # -------------------------------
+    elseif whichpargrav == :density
+        @assert corrlength === nothing "calcMgrav(): corrlength must be nothing for :density"
+        @assert length(sigma) == nbo "calcMgrav(): sigma length must equal nbo"
+        for i in 1:nbo
+            @assert length(sigma[i]) >= 1 "calcMgrav(): sigma[$i] must contain one value (density)"
+        end
+
+        if nx % nbo != 0
+            error("calcMgrav(): nx not divisible by nbo for :density case.")
+        end
+        nbphys_per_body = nx ÷ nbo
+        @assert nbphys_per_body == 1 "calcMgrav(): expected 1 param per body for :density"
+
+        for i in 1:nbo
+            pos = i
+            M[pos, pos] = sigma[i][end]^2
+        end
+
+    else
+        error("calcMgrav(): whichpargrav must be one of (:vertices, :all, :density). Aborting!")
+    end
+
+    return M
+end
+
+
+###########################################################

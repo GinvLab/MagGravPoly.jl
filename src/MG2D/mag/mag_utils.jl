@@ -94,9 +94,9 @@ function mag_dcshift!(tmagobs::Vector{<:Real},tmagcalc::Vector{<:Real},
         @assert id == nothing
         #RMSD
         rmsd = sqrt(sum((tmagobs .- tmagcalc).^2)/length(tmagobs))
-        dig = string(tmagobs[1]-floor(tmagobs[1],digits=0))
-        digl = length(dig)-2
-        rmsd = round(rmsd,digits=digl)
+        #dig = string(tmagobs[1]-floor(tmagobs[1],digits=0))
+        #digl = length(dig)-2
+        #rmsd = round(rmsd,digits=digl)
         val1 = mean(tmagobs)
         val2 = mean(tmagcalc)
         if val1 <= val2
@@ -118,7 +118,7 @@ function mag_dcshift!(tmagobs::Vector{<:Real},tmagcalc::Vector{<:Real},
         error("The only possibilities for `type` are :auto, :absolute and :ref_obs. Aborting")     
     end
     
-    return
+    return nothing
 end
 
 ###############################################
@@ -184,7 +184,7 @@ end
 #-----------------------------------
 
 #########################################################################3
-
+#=
 """
 Function to create a customized Mass Matrix
 """
@@ -358,5 +358,145 @@ function calcMmag(indices::Vector{<:Vector{<:Integer}},modpar::Vector{<:Float64}
     
     return M
 end
-
+=#
 #################################################################################
+
+"""
+$(TYPEDSIGNATURES)
+
+Function to create a customized mass matrix for magnetic problems.
+
+Performs the construction of covariance/mass matrix `M` from:
+- vertex coordinate covariances (x, z);
+- optional physical parameter variances (magnetization).
+
+# Arguments
+- `indices`       :: Vector of vertex index lists per body
+- `modpar`        :: Vector of model parameters [x₁..xₙ, z₁..zₙ, (phys params...)]
+- `sigma`         :: Vector of per-body standard deviations
+- `whichparmag`   :: Symbol — `:vertices`, `:all`, or `:magnetization`
+- `corrlength`    :: Vector of per-body correlation lengths (or `nothing`)
+
+# Returns
+A symmetric matrix `M` of size `(nx, nx)` representing the mass/covariance matrix.
+"""
+function calcMmag(indices::Vector{<:Vector{<:Integer}},
+                  modpar::Vector{<:Float64},
+                  sigma::Vector{<:Vector{<:Float64}},
+                  whichparmag::Symbol;
+                  corrlength::Union{Vector{<:Vector{<:Float64}},Nothing}=nothing)
+
+    # -------------------------------
+    # Internal helper: Gaussian correlation
+    # -------------------------------
+    cgaussian(dist, corrlength) =
+        maximum(dist) == 0.0 ? ones(size(dist)) : exp.(-(dist ./ corrlength) .^ 2)
+
+    # -------------------------------
+    # Step 1: Initialize key quantities
+    # -------------------------------
+    nbo = length(indices)
+    nx  = length(modpar)
+    M   = zeros(nx, nx)
+
+    # Compact unique vertex indexing
+    all_idx = collect(Iterators.flatten(indices))
+    unique_list = unique(all_idx)
+    indbo = length(unique_list)
+    ncoo  = indbo * 2
+
+    if nx < ncoo
+        error("calcMmag(): modpar too short to contain vertex coordinates.")
+    end
+
+    # Extract vertex coordinates
+    xcoords = modpar[1:indbo]
+    zcoords = modpar[indbo+1:2*indbo]
+    pos_of_old = Dict(old => i for (i, old) in enumerate(unique_list))
+
+    # -------------------------------
+    # Step 2: Case A — Vertex covariances (vertices or all)
+    # -------------------------------
+    if whichparmag in (:vertices, :all)
+        @assert corrlength !== nothing "calcMmag(): corrlength must be provided for :vertices or :all"
+        @assert length(corrlength) == nbo "calcMmag(): corrlength must have one entry per body"
+
+        # Sigma and corrlength consistency
+        for i in 1:nbo
+            @assert length(corrlength[i]) >= 2 "corrlength[$i] must contain [x,z] values"
+            @assert length(sigma[i]) >= 2 "sigma[$i] must contain [σx, σz]"
+        end
+
+        # Build compact vertex index lists
+        body_pos = [ [pos_of_old[v] for v in inds] for inds in indices ]
+
+        # -------------------------------
+        # Step 3: Build vertex covariance submatrices
+        # -------------------------------
+        for i in 1:nbo
+            poslist = body_pos[i]
+            ni = length(poslist)
+            if ni == 0; continue; end
+
+            xi, zi = xcoords[poslist], zcoords[poslist]
+            Xi, Zi = reshape(xi, (ni,1)), reshape(zi, (ni,1))
+            distmat = sqrt.((Xi .- Xi').^2 .+ (Zi .- Zi').^2)
+
+            ind_x = poslist
+            ind_z = poslist .+ indbo
+
+            σx, σz = sigma[i][1], sigma[i][2]
+            clx, clz = corrlength[i][1], corrlength[i][end]
+
+            M[ind_x, ind_x] .= σx^2 .* cgaussian(distmat, clx)
+            M[ind_z, ind_z] .= σz^2 .* cgaussian(distmat, clz)
+        end
+
+        # -------------------------------
+        # Step 4: Add physical parameter variances if whichparmag == :all
+        # -------------------------------
+        nbphys_total = nx - ncoo
+        if whichparmag == :all
+            nbphys_per_body = nbphys_total ÷ nbo
+            @assert nbphys_per_body == 6 "calcMmag(): expected 6 magnetization params per body for :all"
+            @assert length(sigma) >= 2*nbo "calcMmag(): sigma must contain entries for vertex + physical params"
+
+            for b in 1:nbphys_per_body
+                for i in 1:nbo
+                    pos = 2*indbo + (b - 1)*nbo + i
+                    M[pos, pos] = sigma[nbo + i][b]^2
+                end
+            end
+        end
+
+    # -------------------------------
+    # Step 5: Case B — Magnetization-only parameters
+    # -------------------------------
+    elseif whichparmag == :magnetization
+        @assert corrlength === nothing "calcMmag(): corrlength must be nothing for :magnetization"
+        @assert length(sigma) == nbo "calcMmag(): sigma must have nbo entries"
+        for i in 1:nbo
+            @assert length(sigma[i]) == 6 "calcMmag(): sigma[$i] must contain 6 components (magnetization)"
+        end
+
+        if nx % nbo != 0
+            error("calcMmag(): nx not divisible by nbo for :magnetization case.")
+        end
+        nbphys_per_body = nx ÷ nbo
+        @assert nbphys_per_body == 6 "calcMmag(): expected 6 parameters per body."
+
+        for p in 1:nbphys_per_body
+            for i in 1:nbo
+                pos = (p - 1)*nbo + i
+                M[pos, pos] = sigma[i][p]^2
+            end
+        end
+
+    else
+        error("calcMmag(): whichparmag must be one of (:vertices, :all, :magnetization). Aborting!")
+    end
+
+    return M
+end
+
+########################################################################
