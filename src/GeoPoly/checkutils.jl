@@ -54,7 +54,7 @@ end
 
 
 #######################################################################################
-
+#=
 """
 $(TYPEDSIGNATURES)
 
@@ -197,5 +197,105 @@ function checkbodyindices(bodyindicesorg::Vector{<:Vector{<:Integer}},verticesor
 
     return bodyindices,vertices
 end
-
+=#
 ##############
+
+"""
+$(TYPEDSIGNATURES)
+
+Function to check for consistency between polygon vertex indices (`bodyindices`) and vertex coordinates (`vertices`). It performs the following checks and corrections:
+
+1. **Monotonic ordering** – Each polygon's vertex indices must be strictly increasing.
+2. **Index uniqueness** – No two polygons should share the same vertex indices.
+3. **Duplicate vertex merging** – Identical vertices are merged, and indices are updated.
+4. **Counterclockwise orientation** – All polygons are reoriented to counterclockwise order.
+
+# Returns
+A tuple `(bodyindices, vertices)` where:
+- `bodyindices` are the corrected vertex index lists for each polygon.
+- `vertices` is the updated vertex matrix with duplicates removed.
+"""
+function checkbodyindices(bodyindices::Vector{<:Vector{<:Integer}},
+                          vertices::AbstractMatrix{<:Real})
+
+    # -------------------------------
+    # Internal helper: check if array is strictly increasing
+    # -------------------------------
+    check_increasing(arr::Vector{Int}) = all(diff(arr) .> 0)
+
+    # Make deep copies to avoid mutating the original input
+    bodyindices = deepcopy(bodyindices)
+    vertices    = deepcopy(vertices)
+    nbo         = length(bodyindices)
+
+    # -------------------------------
+    # Step 1: Check each polygon’s index ordering and uniqueness
+    # -------------------------------
+    for (i, inds) in enumerate(bodyindices)
+        # Ensure indices are sorted in ascending order
+        if !check_increasing(inds)
+            error("Indices in bodyindices[$i] must be strictly increasing. Aborting!")
+        end
+
+        # Ensure that consecutive polygons do not share vertex indices
+        if i < nbo && !isempty(intersect(bodyindices[i], bodyindices[i + 1]))
+            error("Polygons $i and $(i + 1) share vertex indices, which is not allowed. Aborting!")
+        end
+    end
+
+    # -------------------------------
+    # Step 2: Handle the simple case (single polygon)
+    # -------------------------------
+    if nbo == 1
+        pbody = PolygBodies2D(bodyindices, vertices)
+        if !checkanticlockwiseorder(pbody.bo[1])
+            bodyindices[1] = reverse(bodyindices[1])
+        end
+        return bodyindices, vertices
+    end
+
+    # -------------------------------
+    # Step 3: Merge duplicate vertices
+    # -------------------------------
+    i = 1
+    while i <= size(vertices, 1)
+        # Find all vertices identical to vertex i
+        duplicates = findall(j -> all(vertices[i, :] .== vertices[j, :]),
+                             1:size(vertices, 1))
+
+        if length(duplicates) > 1
+            # Keep the first as reference
+            ref = first(duplicates)
+            dupes = setdiff(duplicates, [ref])
+
+            # Update all polygons to replace duplicates with the reference index
+            for b in eachindex(bodyindices)
+                bodyindices[b] = [x in dupes ? ref : x for x in bodyindices[b]]
+            end
+
+            # Remove duplicate vertices from the matrix
+            vertices = vertices[setdiff(1:end, dupes), :]
+
+            # Adjust indices after removal of vertices
+            for b in eachindex(bodyindices)
+                bodyindices[b] = [x - count(d -> d < x, dupes) for x in bodyindices[b]]
+            end
+        end
+        i += 1
+    end
+
+    # -------------------------------
+    # Step 4: Ensure polygons are counterclockwise
+    # -------------------------------
+    pbody = PolygBodies2D(bodyindices, vertices)
+    for (i, bo) in enumerate(pbody.bo)
+        if !checkanticlockwiseorder(bo)
+            bodyindices[i] = reverse(bodyindices[i])
+        end
+    end
+
+    return bodyindices, vertices
+end
+
+#######################################################
+
