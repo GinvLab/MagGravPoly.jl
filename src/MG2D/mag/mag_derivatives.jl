@@ -31,11 +31,12 @@ struct Mag2DPolyMisf{I<:Integer,F<:Real}
     Jind::Union{Nothing,MagnetizVector}
     Jrem::Union{Nothing,MagnetizVector}
     ylatext::Union{Nothing,Vector{<:F}}
-
+    typemisf::Symbol
+    
     function Mag2DPolyMisf(bodyindices::Vector{<:Vector{<:Integer}},northxax::Real,xzobs::Array{<:Real,2},
                            tmagobs::Vector{<:Real},invcovmat::AbstractMatrix{<:Real},whichpar::Symbol ;
                            allvert=nothing,Jind=nothing,Jrem=nothing,
-                           ylatext::Union{Nothing,Vector{<:Real}}=nothing)
+                           ylatext::Union{Nothing,Vector{<:Real}}=nothing,typemisf::Symbol=:normal)
         
         # magpbod_copy is a struct to be used as a temporary/mutable thing just to
         #   speed up calculations
@@ -91,16 +92,21 @@ struct Mag2DPolyMisf{I<:Integer,F<:Real}
             error("Mag2DPolyMisf(): 'whichpar' must be ':all', ':vertices' or ':magnetization'. Aborting!")
         end
 
+        # Check on 'typemisf'
+        if typemisf != :normal && typemisf != :dcshift
+            error("Mag2DPolyMisf(): 'typemisf' must be ':normal' or ':dcshift'. Aborting!")
+        end
+        
         return new{typeof(bodyindices_copy[1][1]),typeof(xzobs[1,1])}(bodyindices_copy,northxax,
                                                                       xzobs,tmagobs,invcovmat,
-                                                                      whichpar,allvert,Jind,Jrem,ylatext)
+                                                                      whichpar,allvert,Jind,Jrem,ylatext,typemisf)
         # return new(bodyindices_copy,northxax,xzobs,tmagobs,invcovmat,
         #            whichpar,allvert,Jind,Jrem,ylatext)
     end
 end
 
 ################################################################
-
+#=
 """
 $(TYPEDSIGNATURES)
 
@@ -210,8 +216,125 @@ function (magmisf::Mag2DPolyMisf)(modpar::AbstractArray)
     
     return misf
 end
-
+=#
 #######################################################
+
+"""
+$(TYPEDSIGNATURES)
+
+Function to compute the value of the misfit functional with respect to the model parameters.
+"""
+function calcmisfmag(modpar::AbstractArray,magmisf::Mag2DPolyMisf)
+    misf = magmisf(modpar)
+    return misf
+end
+
+################################################################
+
+function (magmisf::Mag2DPolyMisf)(modpar::AbstractArray)
+
+    nbo = length(magmisf.bodyindices)
+    
+    if magmisf.whichpar==:all
+        
+        ncoo = length(modpar)-(6*nbo)
+        nvert = div(ncoo,2)
+       
+        # set vertices
+        allvert = reshape(modpar[1:ncoo],nvert,2)
+        
+        l12(n,ncoo,nbo) = (ncoo+1+(n-1)*nbo,ncoo+n*nbo)
+        # set induced magnetization 
+        l1m,l2m = l12(1,ncoo,nbo)
+        l1I,l2I = l12(2,ncoo,nbo)
+        l1D,l2D = l12(3,ncoo,nbo)
+        Jind_mod = modpar[l1m:l2m]
+        Jind_Ideg = modpar[l1I:l2I]
+        Jind_Ddeg = modpar[l1D:l2D]
+
+        # set remnant magnetization
+        l1m,l2m = l12(4,ncoo,nbo)
+        l1I,l2I = l12(5,ncoo,nbo)
+        l1D,l2D = l12(6,ncoo,nbo)
+        Jrem_mod = modpar[l1m:l2m]
+        Jrem_Ideg = modpar[l1I:l2I]
+        Jrem_Ddeg = modpar[l1D:l2D]
+        
+    elseif magmisf.whichpar==:vertices
+
+        ncoo = length(modpar) 
+        nvert = div(ncoo,2)
+
+        # set vertices
+        allvert = reshape(modpar[1:ncoo],nvert,2)
+
+        # set induced magnetization
+        Jind_mod = magmisf.Jind.mod
+        Jind_Ideg = magmisf.Jind.Ideg
+        Jind_Ddeg = magmisf.Jind.Ddeg
+
+        # set remnant magnetization
+        Jrem_mod = magmisf.Jrem.mod
+        Jrem_Ideg = magmisf.Jrem.Ideg
+        Jrem_Ddeg = magmisf.Jrem.Ddeg
+
+    elseif magmisf.whichpar==:magnetization
+
+        # set vertices
+        allvert = magmisf.allvert
+
+        # set induced magnetization
+        Jind_mod  = modpar[1:nbo]
+        Jind_Ideg = modpar[nbo+1:2*nbo]
+        Jind_Ddeg = modpar[(2*nbo)+1:3*nbo]
+
+        # set remnant magnetization
+        Jrem_mod = modpar[(3*nbo)+1:4*nbo]
+        Jrem_Ideg = modpar[(4*nbo)+1:5*nbo]
+        Jrem_Ddeg = modpar[(5*nbo)+1:6*nbo]
+
+    end
+
+    #tmag = zeros(eltype(Jinds[1].mod),size(xzobs,1))
+    tmagAD = zeros(eltype(modpar),size(magmisf.xzobs,1))
+
+    if magmisf.ylatext!=nothing   
+        for i=1:nbo
+            curbo = BodySegments2D(magmisf.bodyindices[i],allvert)
+            tmagAD .+= tmagpoly2_75D(magmisf.xzobs,Jind_mod[i],Jind_Ideg[i],Jind_Ddeg[i],
+                                    Jrem_mod[i],Jrem_Ideg[i],Jrem_Ddeg[i],
+                                    magmisf.northxax,curbo,magmisf.ylatext[1],magmisf.ylatext[end]) 
+        end
+    else    
+        for i=1:nbo
+            curbo = BodySegments2D(magmisf.bodyindices[i],allvert)
+            tmagAD .+= tmagpoly2D(magmisf.xzobs,Jind_mod[i],Jind_Ideg[i],Jind_Ddeg[i],
+                                  Jrem_mod[i],Jrem_Ideg[i],Jrem_Ddeg[i],
+                                  magmisf.northxax,curbo) 
+        end
+    end
+    
+    ##----------------
+    # Multiple dispatch
+    if magmisf.typemisf == :normal
+        dif = tmagAD.-magmisf.tmagobs
+        tmp = magmisf.invcovmat * dif 
+        misf = 0.5 .* dot(dif,tmp)
+    elseif magmisf.typemisf == :dcshift
+        mag_dcshift!(magmisf.tmagobs,tmagAD,:auto)      
+        dif = tmagAD.-magmisf.tmagobs
+        tmp = magmisf.invcovmat * dif 
+        misf = 0.5 .* dot(dif,tmp) 
+    else
+        error("Possible values for 'typemisf' are only :normal or :dcshift. Aborting!")
+    end
+    #end
+    
+    return misf
+end
+
+######################################################################
+
 """
 $(TYPEDSIGNATURES)
 
@@ -247,6 +370,7 @@ end
 
 
 ########################################
+#=
 """
 $(TYPEDSIGNATURES)
 
@@ -278,6 +402,54 @@ function calc∇misfmag(magmisf::Mag2DPolyMisf,modpar::AbstractArray, # ,whichpa
 
     end
 
+    nangrad = isnan.(grad)
+    if any(nangrad)
+        error("calc∇misfmag(): magmisf error, isnan.(grad) = $nangrad")
+    end
+    return grad
+end
+=#
+
+########################################
+
+"""
+$(TYPEDSIGNATURES)
+
+Function to compute the gradient of misfit with respect to the model parameters required for HMC inversions. 
+The gradient is computed by means of automatic differentiation using one of three different methods. The user must indicate the method by `ADkind` string, choosing among `FWDdiff`, `REVdiffTAPE` or `REVdiffTAPEcomp`. 
+For an explanation about the automatic differentiation method, the reader is invited to look at the documentation 
+relative to the Julia packages `ForwardDiff` and `ReverseDiff`.
+"""  
+function calc∇misfmag(magmisf::Mag2DPolyMisf,modpar::AbstractArray, # ,whichpar::String,
+                      ADkind::String,autodiffstuff )    
+
+    if ADkind=="REVdiffTAPE"
+        #println("\nRev diff tape")
+        grad = similar(modpar)
+        ReverseDiff.gradient!(grad,autodiffstuff,modpar)
+
+     elseif ADkind=="REVdiffTAPEcomp"
+        #println("\nRev diff tape")
+        grad = similar(modpar)
+        ReverseDiff.gradient!(grad,autodiffstuff,modpar)
+
+     elseif ADkind=="FWDdiff"
+        #println("\nFWD diff")
+        # chuncksize = 20 # 20
+        # cfggrd = ForwardDiff.GradientConfig(magmisf,modpar,ForwardDiff.Chunk{chuncksize}())
+        # allocate output
+        grad = similar(modpar)
+        ForwardDiff.gradient!(grad,magmisf,modpar,autodiffstuff)
+
+    end
+
+    # Adding contribution from DC-shift
+    #=
+    if magmisf.typemisf==:dcshift
+        grad .+= magANdcshift(magmisf,modpar)
+    end
+    =#
+    
     nangrad = isnan.(grad)
     if any(nangrad)
         error("calc∇misfmag(): magmisf error, isnan.(grad) = $nangrad")
@@ -338,5 +510,108 @@ function jacfindiff(xzobs,northxax,pbody; δx=0.1)
     return Jfd
 end
 
-###########################################################################
 
+########################################
+
+"""
+ Gradient of DC-shift term by using analytic expression for DC-Shift
+"""
+function magANdcshift(magmisf::Mag2DPolyMisf,modpar ; Δh=0.01 )
+
+    # Initialize gradDC vector
+    tobs = magmisf.tmagobs        
+    nobs = length(tobs)
+    npar = length(modpar)
+    gradDC = zeros(npar)
+
+    # Response without perturbations of modpar
+    curmod = copy(modpar)
+    pbody = MG2D.vecmodpar2magstruct(magmisf,magmisf.bodyindices,curmod)
+    calc = MG2D.tmagpolybodies2D(magmisf.xzobs,magmisf.northxax,pbody)
+    
+    for i=1:npar      
+  
+        # central differences
+        # 1
+        curmod = copy(modpar)
+        curmod[i] -= Δh # -
+        pbody = MG2D.vecmodpar2magstruct(magmisf,magmisf.bodyindices,curmod)
+        calc1 = MG2D.tmagpolybodies2D(magmisf.xzobs,magmisf.northxax,pbody)
+
+        # 2
+        curmod = copy(modpar)
+        curmod[i] += Δh # +
+        pbody = MG2D.vecmodpar2magstruct(magmisf,magmisf.bodyindices,curmod)
+        calc2 = MG2D.tmagpolybodies2D(magmisf.xzobs,magmisf.northxax,pbody)
+        
+        # Assembling ...
+        den = sqrt(sum((tobs .- calc).^2)/nobs)
+        fwdg = (calc2.-calc1)./(2*Δh)    # ---> DA USARE AUTODIFF
+        num = sum(dot(fwdg,(tobs .- calc)))
+        
+        # grad
+        gradDC[i] = -num/(nobs*den)        
+    end
+
+    # Sign of DC-shift
+    val1 = mean(tobs)
+    val2 = mean(calc)
+    if val1 <= val2
+        gradDC.*=-1.0
+    end
+    
+    return gradDC
+end
+
+#############################################################
+
+"""
+ Gradient of DC-shift term by finite differences using central differences
+"""
+function magFDdcshift(magmisf::Mag2DPolyMisf,modpar ; Δh=0.01 )
+
+    # Initialize gradDC vector
+    tobs = magmisf.tmagobs
+    nobs = length(tobs)
+    npar = length(modpar)
+    gradDC = zeros(npar)
+
+    # Response without perturbations of modpar
+    curmod = copy(modpar)
+    pbody = MG2D.vecmodpar2magstruct(magmisf,magmisf.bodyindices,curmod)
+    calc = MG2D.tmagpolybodies2D(magmisf.xzobs,magmisf.northxax,pbody)
+    
+    for i=1:npar      
+        
+        # central differences
+        # 1
+        curmod = copy(modpar)
+        curmod[i] -= Δh # -
+        pbody = MG2D.vecmodpar2magstruct(magmisf,magmisf.bodyindices,curmod)
+        calc1 = MG2D.tmagpolybodies2D(magmisf.xzobs,magmisf.northxax,pbody)
+        
+        # 2
+        curmod = copy(modpar)
+        curmod[i] += Δh # +
+        pbody = MG2D.vecmodpar2magstruct(magmisf,magmisf.bodyindices,curmod)
+        calc2 = MG2D.tmagpolybodies2D(magmisf.xzobs,magmisf.northxax,pbody)
+       
+        # Assembling ...
+        mv1 = sqrt(sum((tobs .- calc1).^2)/nobs)
+        mv2 = sqrt(sum((tobs .- calc2).^2)/nobs)
+        
+        # grad
+        gradDC[i] = (mv2-mv1)/(2*Δh)
+    end
+
+    # Sign of DC-shift
+    val1 = mean(tobs)
+    val2 = mean(calc)
+    if val1 <= val2
+        gradDC.*=-1.0
+    end
+     
+    return gradDC
+end
+
+########################################################################

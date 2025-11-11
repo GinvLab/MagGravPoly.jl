@@ -40,10 +40,11 @@ struct Grav2DPolyMisf{I<:Integer,F<:Real}
     allvert::Union{Nothing,Array{F,2}}
     rho::Union{Nothing,Vector{F}}
     ylatext::Union{Nothing,Vector{F}}
+    typemisf::Symbol
 
     function Grav2DPolyMisf(bodyindices::Vector{<:Vector{<:Integer}},xzobs::Array{<:Real,2},
                             tgravobs::Vector{<:Real},invcovmat::AbstractMatrix{<:Real},whichpar::Symbol ;
-                            allvert=nothing,rho=nothing,ylatext::Union{Nothing,Vector{<:Real}}=nothing)
+                            allvert=nothing,rho=nothing,ylatext::Union{Nothing,Vector{<:Real}}=nothing,typemisf::Symbol=:normal)
         
         # magpbod_copy is a struct to be used as a temporary/mutable thing just to
         #   speed up calculations
@@ -95,16 +96,21 @@ struct Grav2DPolyMisf{I<:Integer,F<:Real}
             error("Grav2DPolyMisf(): 'whichpar' must be ':all', ':vertices' or ':density'. Aborting!")
         end
 
+        # Check on 'typemisf'
+        if typemisf != :normal && typemisf != :dcshift
+            error("Grav2DPolyMisf(): 'typemisf' must be ':normal' or ':dcshift'. Aborting!")
+        end
+
         # return new(bodyindices_copy,xzobs,tgravobs,invcovmat,
         #            whichpar,allvert,rho,ylatext)
         return new{typeof(bodyindices_copy[1][1]),typeof(xzobs[1,1])}(bodyindices_copy,
                                                                       xzobs,tgravobs,invcovmat,
-                                                                      whichpar,allvert,rho,ylatext)
+                                                                      whichpar,allvert,rho,ylatext,typemisf)
     end
 end
 
 #################################################
-
+#=
 """
 $(TYPEDSIGNATURES)
 
@@ -176,8 +182,87 @@ function (gravmisf::Grav2DPolyMisf)(modpar::AbstractArray)
 
     return misf
 end
-
+=#
 #######################################################
+
+"""
+$(TYPEDSIGNATURES)
+
+Function to compute the value of the misfit functional with respect to the model parameters.
+"""
+function calcmisfgrav(modpar::AbstractArray,gravmisf::Grav2DPolyMisf)
+    misf = gravmisf(modpar)
+    return misf
+end
+
+###############################################################
+ 
+function (gravmisf::Grav2DPolyMisf)(modpar::AbstractArray)
+    
+    nbo = length(gravmisf.bodyindices)
+    
+    if gravmisf.whichpar==:all
+
+        ncoo = length(modpar)-nbo
+        nvert = div(ncoo,2)
+
+        # set vertices
+        allvert = reshape(modpar[1:ncoo],nvert,2)       
+        # set density
+        rho = modpar[ncoo+1:end]
+
+    elseif gravmisf.whichpar==:vertices
+
+        ncoo = length(modpar) 
+        nvert = div(ncoo,2)
+
+        # set vertices
+        allvert = reshape(modpar[1:ncoo],nvert,2)
+        rho = gravmisf.rho
+
+    elseif gravmisf.whichpar==:density
+
+        allvert = gravmisf.allvert
+        rho  = modpar[1:end]
+
+    end
+    
+    #tmag = zeros(eltype(Jinds[1].mod),size(xzobs,1))
+    tgravAD = zeros(eltype(modpar),size(gravmisf.xzobs,1))
+
+    if gravmisf.ylatext!=nothing
+        for i=1:nbo
+            curbo = BodySegments2D(gravmisf.bodyindices[i],allvert)
+            tgravAD .+= tgravpoly2_75D(gravmisf.xzobs,rho[i],curbo,gravmisf.ylatext[1],gravmisf.ylatext[2]) 
+        end
+    else
+        for i=1:nbo
+            curbo = BodySegments2D(gravmisf.bodyindices[i],allvert)
+            tgravAD .+= tgravpoly2D(gravmisf.xzobs,rho[i],curbo) 
+        end
+    end
+    
+    ##----------------
+    # Multiple dispatch
+    if gravmisf.typemisf == :normal
+        dif = tgravAD.-gravmisf.tgravobs
+        tmp = gravmisf.invcovmat * dif 
+        misf = 0.5 .* dot(dif,tmp)
+    elseif gravmisf.typemisf == :dcshift
+        grav_dcshift!(gravmisf.tgravobs,tgravAD,:auto)      
+        dif = tgravAD.-gravmisf.tgravobs
+        tmp = gravmisf.invcovmat * dif 
+        misf = 0.5 .* dot(dif,tmp) 
+    else
+        error("Possible values for 'typemisf' are only :normal or :dcshift. Aborting!")
+    end
+    #end
+
+    return misf
+end
+
+##################################################################
+
 """
 $(TYPEDSIGNATURES)
 
@@ -212,6 +297,7 @@ function precalcADstuffgrav(gravmisf::Grav2DPolyMisf,ADkind::String,vecmodpar::A
 end
 
 #######################################################
+#=
 """
 $(TYPEDSIGNATURES)
 
@@ -248,6 +334,153 @@ function calc∇misfgrav(gravmisf::Grav2DPolyMisf,modpar::AbstractArray,#whichpa
     end
     return grad
 end
-
+=#
 
 ########################################
+
+"""
+$(TYPEDSIGNATURES)
+
+Function to compute the gradient of the misfit with respect to the model parameters as required for HMC inversions. 
+The gradient is computed by means of automatic differentiation using one of three different methods. The user must indicate the method by `ADkind` string, choosing among `FWDdiff`, `REVdiffTAPE` or `REVdiffTAPEcomp`. 
+For an explanation about the automatic differentiation method, the reader is invited to look at the documentation 
+relative to the Julia packages `ForwardDiff` and `ReverseDiff`.  
+"""  
+function calc∇misfgrav(gravmisf::Grav2DPolyMisf,modpar::AbstractArray,#whichpar::String,
+                       ADkind::String, autodiffstuff )
+
+    #::Union{ReverseDiff.GradientTape,ReverseDiff.CompiledTape,Nothing}
+
+    if ADkind=="REVdiffTAPE"
+        #println("\nRev diff tape")
+        grad = similar(modpar)
+        ReverseDiff.gradient!(grad,autodiffstuff,modpar)
+
+     elseif ADkind=="REVdiffTAPEcomp"
+        #println("\nRev diff tape")
+        grad = similar(modpar)
+        ReverseDiff.gradient!(grad,autodiffstuff,modpar)
+
+     elseif ADkind=="FWDdiff"
+        # allocate output
+        grad = similar(modpar)
+        ForwardDiff.gradient!(grad,gravmisf,modpar,autodiffstuff)
+
+    end
+
+    # Adding contribution from DC-shift
+    if gravmisf.typemisf==:dcshift
+        grad .+= gravANdcshift(gravmisf,modpar)
+    end
+
+    nangrad = isnan.(grad)
+    if any(nangrad)
+        error("calc∇misfgrav(): gravmisf error, isnan.(grad) = $nangrad")
+    end
+    return grad
+end
+
+########################################
+
+"""
+ Gradient of DC-shift term by using analytic expression for DC-Shift
+"""
+function gravANdcshift(gravmisf::Grav2DPolyMisf,modpar ; Δh=0.01 )
+
+    # Initialize gradDC vector
+    tobs = gravmisf.tgravobs        
+    nobs = length(tobs)
+    npar = length(modpar)
+    gradDC = zeros(npar)
+
+    # Response without perturbations of modpar
+    curmod = copy(modpar)
+    pbody = MG2D.vecmodpar2gravstruct(gravmisf,gravmisf.bodyindices,curmod)
+    calc = MG2D.tgravpolybodies2D(gravmisf.xzobs,gravmisf.northxax,pbody)
+    
+    for i=1:npar      
+  
+        # central differences
+        # 1
+        curmod = copy(modpar)
+        curmod[i] -= Δh # -
+        pbody = MG2D.vecmodpar2gravstruct(gravmisf,gravmisf.bodyindices,curmod)
+        calc1 = MG2D.tgravpolybodies2D(xzobs,pbody)
+
+        # 2
+        curmod = copy(modpar)
+        curmod[i] += Δh # +
+        pbody = MG2D.vecmodpar2gravstruct(gravmisf,gravmisf.bodyindices,curmod)
+        calc2 = MG2D.tgravpolybodies2D(xzobs,pbody)
+        
+        # Assembling ...
+        den = sqrt(sum((tobs .- calc).^2)/nobs)
+        fwdg = (calc2.-calc1)./(2*Δh)
+        num = sum(dot(fwdg,(tobs .- calc)))
+        
+        # grad
+        gradDC[i] = -num/(nobs*den)
+    end
+
+    # Sign of DC-shift
+    val1 = mean(tobs)
+    val2 = mean(calc)
+    if val1 <= val2
+        gradDC.*=-1.0
+    end
+    
+    return gradDC
+end
+
+#############################################################
+
+"""
+ Gradient of DC-shift term by finite differences using central differences
+"""
+function gravFDdcshift(gravmisf::Grav2DPolyMisf,modpar ; Δh=0.01 )
+
+    # Initialize gradDC vector
+    tobs = gravmisf.tgravobs
+    nobs = length(tobs)
+    npar = length(modpar)
+    gradDC = zeros(npar)
+
+    # Response without perturbations of modpar
+    curmod = copy(modpar)
+    pbody = MG2D.vecmodpar2gravstruct(gravmisf,gravmisf.bodyindices,curmod)
+    calc = MG2D.tgravpolybodies2D(gravmisf.xzobs,gravmisf.northxax,pbody)
+    
+    for i=1:npar      
+        
+        # central differences
+        # 1
+        curmod = copy(modpar)
+        curmod[i] -= Δh # -
+        pbody = MG2D.vecmodpar2gravstruct(gravmisf,gravmisf.bodyindices,curmod)
+        calc1 = MG2D.tgravpolybodies2D(xzobs,pbody)
+        
+        # 2
+        curmod = copy(modpar)
+        curmod[i] += Δh # +
+        pbody = MG2D.vecmodpar2gravstruct(gravmisf,gravmisf.bodyindices,curmod)
+        calc2 = MG2D.tgravpolybodies2D(xzobs,pbody)
+
+        # Assembling ...
+        mv1 = sqrt(sum((tobs .- calc1).^2)/nobs)
+        mv2 = sqrt(sum((tobs .- calc2).^2)/nobs)
+
+        # grad
+        gradDC[i] = (mv2-mv1)/(2*Δh)
+    end
+
+    # Sign of DC-shift
+    val1 = mean(tobs)
+    val2 = mean(calc)
+    if val1 <= val2
+        gradDC.*=-1.0
+    end
+    
+    return gradDC
+end
+
+########################################################################
