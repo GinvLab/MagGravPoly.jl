@@ -3,19 +3,19 @@
 """
 $(TYPEDSIGNATURES)
 
-Compute the DC-Shift of gravity data. There are three possibilities for `type`:
+Compute the DC-Shift of gravity data. There are three possibilities for `dcshift`:
 - :auto
 - :absolute
 - :ref_obs
 See the MagGravPoly manual for details and explanations.
 """
 function grav_dcshift!(tgravobs::Vector{<:Real},tgravcalc::Vector{<:Real},
-                       type::Symbol;id::Union{Nothing,<:Real}=nothing)
+                       dcshift::Symbol;idshift::Union{Nothing,<:Integer,<:AbstractFloat}=nothing)
 
     @assert length(tgravobs) == length(tgravcalc)
     
-    if type == :auto
-        @assert id == nothing
+    if dcshift == :auto
+        @assert idshift == nothing "When 'dcshift' is :auto, 'idshift' must be nothing. Aborting!"
         #RMSD
         rmsd = sqrt(sum((tgravobs .- tgravcalc).^2)/length(tgravobs))
         #dig = string(tgravobs[1]-floor(tgravobs[1],digits=0))
@@ -28,18 +28,18 @@ function grav_dcshift!(tgravobs::Vector{<:Real},tgravcalc::Vector{<:Real},
         else
             tgravcalc.+=rmsd
         end
-    elseif type == :absolute
-        @assert id != nothing
-        tgravcalc.+= id
-    elseif type == :ref_obs
-        @assert typeof(id) <: Integer
-        @assert id > 0 && id <= length(tgravobs)
-        val1 = tgravobs[id]
-        val2 = tgravcalc[id]
+    elseif dcshift == :absolute
+        @assert idshift != nothing "When 'dcshift' is :absolute, 'idshift' must be a numeric value. Aborting!"
+        tgravcalc.+= idshift
+    elseif dcshift == :ref_obs
+        @assert typeof(idshift) <: Integer "When 'dcshift' is :ref_obs, 'idshift' must be a positive Integer. Aborting!"
+        @assert idshift > 0 && idshift <= length(tgravobs)
+        val1 = tgravobs[idshift]
+        val2 = tgravcalc[idshift]
         diff = val1-val2
         tgravcalc.+=diff  
     else
-        error("The only possibilities for `type` are :auto, :absolute and :ref_obs. Aborting")     
+        error("The only possibilities for `dcshift` are :auto, :absolute and :ref_obs. Aborting")     
     end
     
     return

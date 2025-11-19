@@ -79,19 +79,19 @@ end
 """
 $(TYPEDSIGNATURES)
 
-Compute the DC-Shift of Total-field Magnetic intensity Anomaly (TMI) data. There are three possibilities for `type`:
+Compute the DC-Shift of Total-field Magnetic intensity Anomaly (TMI) data. There are three possibilities for `dcshift`:
 - :auto
 - :absolute
 - :ref_obs
 See the MagGravPoly manual for details and explanations.
 """
 function mag_dcshift!(tmagobs::Vector{<:Real},tmagcalc::Vector{<:Real},
-                      type::Symbol;id::Union{Nothing,<:Real}=nothing)
+                      dcshift::Symbol;idshift::Union{Nothing,<:Integer,<:AbstractFloat}=nothing)
 
     @assert length(tmagobs) == length(tmagcalc)
     
-    if type == :auto
-        @assert id == nothing
+    if dcshift == :auto
+        @assert idshift == nothing "When 'dcshift' is :auto, 'idshift' must be nothing. Aborting!"
         #RMSD
         rmsd = sqrt(sum((tmagobs .- tmagcalc).^2)/length(tmagobs))
         #dig = string(tmagobs[1]-floor(tmagobs[1],digits=0))
@@ -104,18 +104,18 @@ function mag_dcshift!(tmagobs::Vector{<:Real},tmagcalc::Vector{<:Real},
         else
             tmagcalc.+=rmsd
         end
-    elseif type == :absolute
-        @assert id != nothing
-        tmagcalc.+= id
-    elseif type == :ref_obs
-        @assert typeof(id) <: Integer
-        @assert id > 0 && id <= length(tmagobs)
-        val1 = tmagobs[id]
-        val2 = tmagcalc[id]
+    elseif dcshift == :absolute
+        @assert idshift != nothing "When 'dcshift' is :absolute, 'idshift' must be a numeric value. Aborting!"
+        tmagcalc.+= idshift
+    elseif dcshift == :ref_obs
+        @assert typeof(idshift) <: Integer && idshift > 0 "When 'dcshift' is :ref_obs, 'idshift' must be a positive Integer. Aborting!"
+        @assert idshift <= length(tmagobs)
+        val1 = tmagobs[idshift]
+        val2 = tmagcalc[idshift]
         diff = val1-val2
         tmagcalc.+=diff
     else
-        error("The only possibilities for `type` are :auto, :absolute and :ref_obs. Aborting")     
+        error("The only possibilities for `dcshift` are :auto, :absolute and :ref_obs. Aborting")     
     end
     
     return nothing

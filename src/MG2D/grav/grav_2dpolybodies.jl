@@ -505,7 +505,7 @@ function grav2_75D(x1::Real,y1::Real,z1::Real,x2::Real,y2::Real,z2::Real,ρ::Rea
 
     # Error if the side is too close to the observation point (calculation continues)
     if abs(diffatan2) > anglelim && abs(diffatan1) > anglelim 
-        @warn "A polygon side is too close to an observation point (calculation continues)"
+       # @warn "A polygon side is too close to an observation point (calculation continues)"
     end
     
     #-------------------------------------------------

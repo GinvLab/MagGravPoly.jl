@@ -337,7 +337,7 @@ Constructs a full covariance/mass matrix `M` containing:
 - `corrlength`     :: Vector of per-body correlation lengths (or `nothing`)
 
 # Returns
-A symmetric matrix `M` of size `(nx, nx)` representing the joint covariance structure.
+A symmetric matrix `M` of size `(nx, nx)` representing the joint covariance structure and its inverse.
 """
 function calcMjoint(indices::Vector{<:Vector{<:Integer}},
                     modpar::Vector{Float64},
@@ -349,8 +349,20 @@ function calcMjoint(indices::Vector{<:Vector{<:Integer}},
     # -------------------------------
     # Internal helper: Gaussian correlation
     # -------------------------------
-    cgaussian(dist, corrlength) =
-        maximum(dist) == 0.0 ? ones(size(dist)) : exp.(-(dist ./ corrlength) .^ 2)
+    cgaussian(dist, corrlength) =  exp.(-(dist ./ corrlength) .^ 2)
+
+    # -------------------------------
+    # Internal helper: Safe way to calc. inv
+    # -------------------------------
+    function invposdefmat(A)
+        if !isposdef(A)
+            A .+=  I(size(A,1)).*10^-10
+        end
+        L = cholesky(A).L  ## C = L L'
+        L_inv = inv(L)
+        A_inv = L_inv'*L_inv ##  (AB)^-1 = B^-1 A^-1
+        return A_inv
+    end
 
     # -------------------------------
     # Step 1: Initialize quantities
@@ -358,6 +370,7 @@ function calcMjoint(indices::Vector{<:Vector{<:Integer}},
     nbo = length(indices)
     nx  = length(modpar)
     M   = zeros(nx, nx)
+    Minv = zeros(nx, nx)
 
     # Build compact vertex mapping (unique vertex indexing)
     all_idx = collect(Iterators.flatten(indices))
@@ -405,14 +418,20 @@ function calcMjoint(indices::Vector{<:Vector{<:Integer}},
 
             ind_x = poslist
             ind_z = poslist .+ indbo
-
+            
             σx, σz = sigma[i][1], sigma[i][2]
             clx, clz = corrlength[i][1], corrlength[i][end]
 
-            M[ind_x, ind_x] .= σx^2 .* cgaussian(distmat, clx)
-            M[ind_z, ind_z] .= σz^2 .* cgaussian(distmat, clz)
-        end
+            M[ind_x, ind_x] .= σx^2 .* cgaussian(distmat, clx) #clx
+            M[ind_z, ind_z] .= σz^2 .* cgaussian(distmat, clz) #clz
 
+            # Calculating the inverse...
+            if whichparmag == :vertices && whichpargrav == :vertices
+                Minv[ind_x, ind_x] .= invposdefmat(M[ind_x, ind_x])
+                Minv[ind_z, ind_z] .= invposdefmat(M[ind_z, ind_z])
+            end       
+        end
+        
         # -------------------------------
         # Step 4: Add physical parameter variances (magnetic + gravity)
         # -------------------------------
@@ -467,6 +486,11 @@ function calcMjoint(indices::Vector{<:Vector{<:Integer}},
             error("calcMjoint(): invalid model layout — (nx - ncoo)/nbo = $nbphys_per_body not supported.")
         end
 
+        # Calculating the inverse...
+        if whichparmag != :vertices && whichpargrav != :vertices
+            Minv = invposdefmat(M)
+        end
+        
     # -------------------------------
     # Step 5: Case B — Magnetization + Density only
     # -------------------------------
@@ -489,6 +513,8 @@ function calcMjoint(indices::Vector{<:Vector{<:Integer}},
                 M[pos, pos] = sigma[i][p]^2
             end
         end
+        #Calculating the inverse...
+        Minv = invposdefmat(M)
 
     else
         error("""calcMjoint(): invalid combination of whichparmag/whichpargrav.
@@ -501,7 +527,17 @@ Allowed combinations:
 Aborting!""")
     end
 
-    return M
+    # Last check M positive definite
+    if !isposdef(M)
+        M .+=  I(size(M,1)).*10^-10
+    end
+
+    #Last check Minv positive definite
+    if !isposdef(Minv)
+        Minv .+=  I(size(Minv,1)).*10^-10
+    end
+        
+    return M,Minv
 end
 
 

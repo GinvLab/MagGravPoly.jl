@@ -40,11 +40,13 @@ struct Grav2DPolyMisf{I<:Integer,F<:Real}
     allvert::Union{Nothing,Array{F,2}}
     rho::Union{Nothing,Vector{F}}
     ylatext::Union{Nothing,Vector{F}}
-    typemisf::Symbol
-
+    dcshift::Union{Nothing,Symbol}
+    idshift::Union{Nothing,<:Integer,<:AbstractFloat}
+    
     function Grav2DPolyMisf(bodyindices::Vector{<:Vector{<:Integer}},xzobs::Array{<:Real,2},
                             tgravobs::Vector{<:Real},invcovmat::AbstractMatrix{<:Real},whichpar::Symbol ;
-                            allvert=nothing,rho=nothing,ylatext::Union{Nothing,Vector{<:Real}}=nothing,typemisf::Symbol=:normal)
+                            allvert=nothing,rho=nothing,ylatext::Union{Nothing,Vector{<:Real}}=nothing,
+                            dcshift::Union{Nothing,Symbol}=nothing,idshift::Union{Nothing,<:Integer,<:AbstractFloat}=nothing)
         
         # magpbod_copy is a struct to be used as a temporary/mutable thing just to
         #   speed up calculations
@@ -96,16 +98,11 @@ struct Grav2DPolyMisf{I<:Integer,F<:Real}
             error("Grav2DPolyMisf(): 'whichpar' must be ':all', ':vertices' or ':density'. Aborting!")
         end
 
-        # Check on 'typemisf'
-        if typemisf != :normal && typemisf != :dcshift
-            error("Grav2DPolyMisf(): 'typemisf' must be ':normal' or ':dcshift'. Aborting!")
-        end
-
         # return new(bodyindices_copy,xzobs,tgravobs,invcovmat,
         #            whichpar,allvert,rho,ylatext)
         return new{typeof(bodyindices_copy[1][1]),typeof(xzobs[1,1])}(bodyindices_copy,
                                                                       xzobs,tgravobs,invcovmat,
-                                                                      whichpar,allvert,rho,ylatext,typemisf)
+                                                                      whichpar,allvert,rho,ylatext,dcshift,idshift)
     end
 end
 
@@ -244,17 +241,16 @@ function (gravmisf::Grav2DPolyMisf)(modpar::AbstractArray)
     
     ##----------------
     # Multiple dispatch
-    if gravmisf.typemisf == :normal
+    if gravmisf.dcshift == nothing
+        @assert gravmisf.dcshift==gravmisf.idshift "When 'dcshift' is nothing, also 'idshift' must be nothing. Aborting!"
         dif = tgravAD.-gravmisf.tgravobs
         tmp = gravmisf.invcovmat * dif 
         misf = 0.5 .* dot(dif,tmp)
-    elseif gravmisf.typemisf == :dcshift
-        grav_dcshift!(gravmisf.tgravobs,tgravAD,:auto)      
+    else
+        grav_dcshift!(gravmisf.tgravobs,tgravAD,gravmisf.dcshift,idshift=gravmisf.idshift)
         dif = tgravAD.-gravmisf.tgravobs
         tmp = gravmisf.invcovmat * dif 
-        misf = 0.5 .* dot(dif,tmp) 
-    else
-        error("Possible values for 'typemisf' are only :normal or :dcshift. Aborting!")
+        misf = 0.5 .* dot(dif,tmp)
     end
     #end
 

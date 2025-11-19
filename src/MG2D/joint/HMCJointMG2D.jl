@@ -53,7 +53,9 @@ struct Joint2DpolyProb
                              mag_invCd::AbstractMatrix{<:Real},mag_whichpar::Symbol,mag_ADkind::String,
                              grav_xzobs::Array{<:Real,2},grav_obsdata::Vector{<:Real},
                              grav_invCd::AbstractMatrix{<:Real},grav_whichpar::Symbol,grav_ADkind::String,
-                             trytofixpolygons::Bool=false,typemisfmag::Symbol=:normal,typemisfgrav::Symbol=:normal  )
+                             trytofixpolygons::Bool=false,
+                             dcshiftmag::Union{Nothing,Symbol}=nothing,idshiftmag::Union{Nothing,<:Integer,<:AbstractFloat}=nothing,
+                             dcshiftgrav::Union{Nothing,Symbol}=nothing,idshiftgrav::Union{Nothing,<:Integer,<:AbstractFloat}=nothing )
 
 
 
@@ -85,11 +87,12 @@ struct Joint2DpolyProb
         else
             printstyled(" Joint magnetic & gravity problem type: 2.75D\n",bold=true,color=:light_yellow)
         end
+
         
         # Instantiate the misfit type
         magmisf = Mag2DPolyMisf(jpbodystart.geom.bodyindices,northxax,mag_xzobs,mag_obsdata,mag_invCd,mag_whichpar,
                                 allvert=mag_allvert,Jind=Jind,Jrem=Jrem,
-                                ylatext=jpbodystart.ylatext,typemisf=typemisfmag)
+                                ylatext=jpbodystart.ylatext,dcshift=dcshiftmag,idshift=idshiftmag)
 
         # Create  Grav2DPolyMisf
         if grav_whichpar==:all
@@ -106,7 +109,7 @@ struct Joint2DpolyProb
         # Instantiate the misfit type
         gravmisf = Grav2DPolyMisf(jpbodystart.geom.bodyindices,grav_xzobs,grav_obsdata,grav_invCd,
                                   grav_whichpar,allvert=grav_allvert,rho=rho,
-                                  ylatext=jpbodystart.ylatext,typemisf=typemisfgrav)
+                                  ylatext=jpbodystart.ylatext,dcshift=dcshiftgrav,idshift=idshiftgrav)
 
         ##
         firsttime_grad = Ref(true)

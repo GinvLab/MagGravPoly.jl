@@ -53,7 +53,8 @@ struct Mag2DpolyProb
     function Mag2DpolyProb(; pbodystart::MagPolygBodies2D,topography::TopoEdges,
                            northxax::Real,mag_xzobs::Array{<:Real,2},mag_obsdata::Vector{<:Real},
                            mag_invCd::AbstractMatrix{<:Real},mag_whichpar::Symbol,mag_ADkind::String, 
-                           trytofixpolygons::Bool=false,typemisf::Symbol=:normal )
+                           trytofixpolygons::Bool=false,
+                           dcshift::Union{Nothing,Symbol}=nothing,idshift::Union{Nothing,<:Integer,<:AbstractFloat}=nothing )
 
         # First create Mag2DPolyMisf 
         if mag_whichpar==:all
@@ -86,7 +87,7 @@ struct Mag2DpolyProb
 
         # Instantiate the misfit type
         magmisf = Mag2DPolyMisf(pbodystart.geom.bodyindices,northxax,mag_xzobs,mag_obsdata,mag_invCd,mag_whichpar,
-                                allvert=mag_allvert,Jind=Jind,Jrem=Jrem,ylatext=ylatext,typemisf=typemisf)
+                                allvert=mag_allvert,Jind=Jind,Jrem=Jrem,ylatext=ylatext,dcshift=dcshift,idshift=idshift)
 
         ##----------------------------------------------
         firsttime_grad = Ref(true) 

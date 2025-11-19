@@ -66,7 +66,7 @@ function calcmisfjointmaggrav(magmisf::Mag2DPolyMisf,gravmisf::Grav2DPolyMisf,
 end
 
 #########################################################################
-
+#=
 """
 $(TYPEDSIGNATURES)
 
@@ -83,8 +83,9 @@ function precalcADstuffjointmaggrav(magmisf::Mag2DPolyMisf,gravmisf::Grav2DPolyM
     
     return autodiffstuffmag,autodiffstuffgrav
 end   
-
+=#
 #######################################################
+#=
 """
 $(TYPEDSIGNATURES)
 
@@ -96,7 +97,7 @@ relative to the Julia packages `ForwardDiff` and `ReverseDiff`.
 function calc∇misfjointmaggrav(magmisf::Mag2DPolyMisf,gravmisf::Grav2DPolyMisf,ADkindmag::String,
                                ADkindgrav::String,vecmodpar::AbstractArray,
                                autodiffstuffmag,autodiffstuffgrav)
-
+    
     vecmodmag,vecmodgrav = splitmaggrav(magmisf,gravmisf,vecmodpar)
     
     gradmag = calc∇misfmag(magmisf,vecmodmag,ADkindmag,autodiffstuffmag)
@@ -134,7 +135,7 @@ function calc∇misfjointmaggrav(magmisf::Mag2DPolyMisf,gravmisf::Grav2DPolyMisf
     elseif magmisf.whichpar==:vertices && gravmisf.whichpar==:vertices
         
         grad = gradmag+gradgrav
-        
+       
     end
 
     
@@ -144,5 +145,5 @@ function calc∇misfjointmaggrav(magmisf::Mag2DPolyMisf,gravmisf::Grav2DPolyMisf
     end
     return grad
 end
-
+=#
 #######################################################

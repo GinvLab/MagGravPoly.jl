@@ -31,12 +31,14 @@ struct Mag2DPolyMisf{I<:Integer,F<:Real}
     Jind::Union{Nothing,MagnetizVector}
     Jrem::Union{Nothing,MagnetizVector}
     ylatext::Union{Nothing,Vector{<:F}}
-    typemisf::Symbol
+    dcshift::Union{Nothing,Symbol}
+    idshift::Union{Nothing,<:Integer,<:AbstractFloat}
     
     function Mag2DPolyMisf(bodyindices::Vector{<:Vector{<:Integer}},northxax::Real,xzobs::Array{<:Real,2},
                            tmagobs::Vector{<:Real},invcovmat::AbstractMatrix{<:Real},whichpar::Symbol ;
                            allvert=nothing,Jind=nothing,Jrem=nothing,
-                           ylatext::Union{Nothing,Vector{<:Real}}=nothing,typemisf::Symbol=:normal)
+                           ylatext::Union{Nothing,Vector{<:Real}}=nothing,
+                           dcshift::Union{Nothing,Symbol}=nothing,idshift::Union{Nothing,<:Integer,<:AbstractFloat}=nothing)
         
         # magpbod_copy is a struct to be used as a temporary/mutable thing just to
         #   speed up calculations
@@ -91,15 +93,10 @@ struct Mag2DPolyMisf{I<:Integer,F<:Real}
         else
             error("Mag2DPolyMisf(): 'whichpar' must be ':all', ':vertices' or ':magnetization'. Aborting!")
         end
-
-        # Check on 'typemisf'
-        if typemisf != :normal && typemisf != :dcshift
-            error("Mag2DPolyMisf(): 'typemisf' must be ':normal' or ':dcshift'. Aborting!")
-        end
         
         return new{typeof(bodyindices_copy[1][1]),typeof(xzobs[1,1])}(bodyindices_copy,northxax,
                                                                       xzobs,tmagobs,invcovmat,
-                                                                      whichpar,allvert,Jind,Jrem,ylatext,typemisf)
+                                                                      whichpar,allvert,Jind,Jrem,ylatext,dcshift,idshift)
         # return new(bodyindices_copy,northxax,xzobs,tmagobs,invcovmat,
         #            whichpar,allvert,Jind,Jrem,ylatext)
     end
@@ -316,17 +313,16 @@ function (magmisf::Mag2DPolyMisf)(modpar::AbstractArray)
     
     ##----------------
     # Multiple dispatch
-    if magmisf.typemisf == :normal
+    if magmisf.dcshift == nothing
+        @assert magmisf.dcshift==magmisf.idshift "When 'dcshift' is nothing, also 'idshift' must be nothing. Aborting!"
         dif = tmagAD.-magmisf.tmagobs
         tmp = magmisf.invcovmat * dif 
         misf = 0.5 .* dot(dif,tmp)
-    elseif magmisf.typemisf == :dcshift
-        mag_dcshift!(magmisf.tmagobs,tmagAD,:auto)      
+    else
+        mag_dcshift!(magmisf.tmagobs,tmagAD,magmisf.dcshift,idshift=magmisf.idshift)      
         dif = tmagAD.-magmisf.tmagobs
         tmp = magmisf.invcovmat * dif 
-        misf = 0.5 .* dot(dif,tmp) 
-    else
-        error("Possible values for 'typemisf' are only :normal or :dcshift. Aborting!")
+        misf = 0.5 .* dot(dif,tmp)
     end
     #end
     
